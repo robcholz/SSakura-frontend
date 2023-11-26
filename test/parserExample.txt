@@ -1,0 +1,7 @@
+PROCEDURE foo(x y)
+    x + foo(y, 4)
+
+PROCEDURE foo(x y)
+    x + y
+
+y

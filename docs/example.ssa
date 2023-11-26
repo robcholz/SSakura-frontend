@@ -1,0 +1,23 @@
+a<-expression   Evaluates expression and then assigns a copy of the result to the variable a.
+
+DISPLAY(expression)     Displays the value of expression, followed by a space.
+
+INPUT()     Accepts a value from the user and returns the input value.
+
+a+b     The arithmetic operators +, -, *, and / are used to perform arithmetic on a and b.
+a-b     For example, 17 / 5 evaluates to 3.4.
+a*b     The order of operations used in mathematics applies when evaluating expressions.
+a/b
+
+a MOD b     Evaluates to the remainder when a is divided by b.
+            Assume that a is an integer greater than or equal to 0 and b is an integer greater than 0.
+
+RANDOM(a, b)    Generates and returns a random integer from a to b, including a and b.
+                Each result is equally likely to occur.
+
+a=b     The relational operators =, ≠, >, <, ≥, and ≤ are used to test the relationship between two variables, expressions, or values.
+a≠b     A comparison using relational operators evaluates to a Boolean value.
+a>b     For example, a = b evaluates to true if a and b are equal;otherwise it evaluates to false.
+a<b
+a≥b
+a≤b

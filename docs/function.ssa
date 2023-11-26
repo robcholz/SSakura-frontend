@@ -1,0 +1,18 @@
+PROCEDURE func(list, word)
+{
+    index <- 1
+    FOR EACH item IN list
+    {
+        IF (item = word)
+        {
+            RETURN index
+        }
+    index <- index + 1
+    }
+    RETURN ("Word not in list")
+}
+
+str <- [red, blue, purple]
+DISPLAY(func(str, blue))
+DISPLAY(func(str, red))
+DISPLAY(func(str, pink))
