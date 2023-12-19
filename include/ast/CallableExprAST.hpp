@@ -15,6 +15,7 @@
 class CallableExprAST : public ExprAST {
 public:
     explicit CallableExprAST(const std::string& callable,std::vector<std::unique_ptr<ExprAST>> arguments);
+    llvm::Value* codeGen() final;
 private:
     std::string callable;
     std::vector<std::unique_ptr<ExprAST>> arguments;

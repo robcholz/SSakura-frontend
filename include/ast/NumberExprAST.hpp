@@ -6,19 +6,24 @@
 #ifndef SSAKURA_NUMBEREXPRAST_HPP
 #define SSAKURA_NUMBEREXPRAST_HPP
 
-#include <string>
 #include "ExprAST.hpp"
 
+
+namespace llvm {
+    class Value;
+}
 
 class NumberExprAST : public ExprAST {
 public:
     explicit NumberExprAST(const std::string& number);
 
-private:
-    using integer_t=long;
-    using floating_t=long double;
+    llvm::Value* codeGen() final;
 
-    enum Type{
+private:
+    using integer_t = long;
+    using floating_t = long double;
+
+    enum Type {
         INTEGER,
         FLOATING,
     };

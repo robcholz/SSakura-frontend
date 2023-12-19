@@ -21,3 +21,22 @@ a>b     For example, a = b evaluates to true if a and b are equal;otherwise it e
 a<b
 a≥b
 a≤b
+
+NOT condition   Evaluates to true if condition is false; otherwise evaluates to false.
+condition1 AND condition2   Evaluates to true if both condition1 and condition2 are true; otherwise evaluates to false.
+
+The code in block of statements is executed if the Boolean expression condition evaluates to true;
+no action is taken if condition evaluates to false.
+IF(condition){
+    <block of statements>
+}
+
+The code in first block of statements is executed
+if the Boolean expression condition evaluates to true;
+otherwise the code in second block of statements is executed.
+IF(condition){
+    <first block of statements>
+}
+ELSE{
+    <second block of statements>
+}

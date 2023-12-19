@@ -13,6 +13,7 @@
 class BinaryExprAST : public ExprAST {
 public:
     explicit BinaryExprAST(char op,std::unique_ptr<ExprAST> leftExprAst,std::unique_ptr<ExprAST> rightExprAst);
+    llvm::Value* codeGen() final;
 private:
     char op;
     std::unique_ptr<ExprAST> leftExprAst;

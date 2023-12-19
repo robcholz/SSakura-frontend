@@ -1,7 +1,10 @@
-PROCEDURE foo(x y)
-    x + foo(y, 4)
+PROCEDURE foo(x:I32):I32{
+    IF(2){
+     RETURN foo(2+4*3)
+    }
+    ELSE{
+     RETURN foo(2)
+    }
+}
 
-PROCEDURE foo(x y)
-    x + y
-
-y
+foo(2)

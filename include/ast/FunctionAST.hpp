@@ -8,16 +8,17 @@
 
 
 #include <memory>
-#include <string>
-#include <vector>
-#include "ExprAST.hpp"
+
+
+class ExprAST;
+class PrototypeAST;
 
 class FunctionAST {
 public:
-    explicit FunctionAST(const std::string& name,std::vector<std::string> arguments,std::unique_ptr<ExprAST> body);
+    explicit FunctionAST(std::unique_ptr<PrototypeAST> prototype, std::unique_ptr<ExprAST> body);
+    llvm::Value* codeGen();
 private:
-    std::string name;
-    std::vector<std::string> arguments;
+    std::unique_ptr<PrototypeAST> prototype;
     std::unique_ptr<ExprAST> body;
 };
 

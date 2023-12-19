@@ -9,7 +9,7 @@ Lexer::Lexer() {
     this->currChar = -1;
 }
 
-void Lexer::readFile(const std::string& filename) {
+void Lexer::readFile(const std::string &filename) {
     file.open(filename);
     while (!file.is_open());
 }
@@ -36,8 +36,25 @@ int Lexer::getToken() {
         }
         if (identifierVal == "PROCEDURE") {
             return (int) Token::PROCEDURE;
-        } else
+        } else if (identifierVal == "{") {
+            return (int) Token::BRACE;
+        } else if (identifierVal == "IF") {
+            return (int) Token::IF;
+        } else if (identifierVal == "ELSE") {
+            return (int) Token::ELSE;
+        } else if (identifierVal == "EXTERN") {
+            return (int) Token::EXTERN;
+        } else if (identifierVal == "RETURN") {
+            return (int) Token::RETURN;
+        } else if (identifierVal == "REPEAT") {
+            return (int) Token::REPEAT;
+        } else if (identifierVal == "UNTIL") {
+            return (int) Token::UNTIL;
+        } else if (identifierVal == "TIMES") {
+            return (int) Token::TIMES;
+        } else {
             return (int) Token::IDENTIFIER;
+        }
     } // string
     if (isdigit(lastChar) || lastChar == '.') {
         numberVal.clear();
@@ -49,7 +66,7 @@ int Lexer::getToken() {
     }
     if (lastChar == '#') {
         do
-            lastChar = getchar();
+            lastChar = getNextChar();
         while (lastChar != EOF && lastChar != '\n' && lastChar != '\r');
         if (lastChar != EOF) {
             return getToken();

@@ -2,7 +2,9 @@
 // Created by robcholz on 11/25/23.
 //
 #include <complex>
+#include <llvm/IR/Constants.h>
 #include "ast/NumberExprAST.hpp"
+#include "Info.hpp"
 
 
 NumberExprAST::NumberExprAST(const std::string& number) {
@@ -70,3 +72,10 @@ NumberExprAST::NumberExprAST(const std::string& number) {
         this->type = FLOATING;
     }
 }
+
+llvm::Value* NumberExprAST::codeGen() {
+    //if(this->type==INTEGER)
+    //    return llvm::ConstantInt::get(Info::getInstance().getLLVMContext(),llvm::APInt((int)this->integer)); // TODO
+    return llvm::ConstantFP::get(Info::getInstance().getLLVMContext(),llvm::APFloat((double)this->integer)); // TODO
+}
+

@@ -13,6 +13,8 @@
 class VariableExprAST:public ExprAST {
 public:
     explicit VariableExprAST(const std::string& name);
+    llvm::Value* codeGen() final;
+
 private:
     std::string name;
 };
