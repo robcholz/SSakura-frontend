@@ -9,7 +9,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <type_traits>
 
 #include "Info.hpp"
 
@@ -27,7 +26,7 @@ enum class ElementaryType {
     U64,
     U128,
     USIZE,
-
+    F16,
     F32,
     F64,
 };
@@ -40,15 +39,18 @@ namespace ssa {
         {"I32", ElementaryType::I32},
         {"I64", ElementaryType::I64},
         {"I128", ElementaryType::I128},
+        {"ISIZE", ElementaryType::ISIZE},
         {"U8", ElementaryType::U8},
         {"U16", ElementaryType::U16},
         {"U32", ElementaryType::U32},
         {"U64", ElementaryType::U64},
         {"U128", ElementaryType::U128},
         {"USIZE", ElementaryType::USIZE},
+        {"F16", ElementaryType::F16},
         {"F32", ElementaryType::F32},
         {"F64", ElementaryType::F64},
     };
+
     // TODO use fixed-container
     static std::unordered_map<ElementaryType, std::string> type2str = {
         {ElementaryType::I8, "I8"},
@@ -63,14 +65,16 @@ namespace ssa {
         {ElementaryType::U64, "U64"},
         {ElementaryType::U128, "U128"},
         {ElementaryType::USIZE, "USIZE"},
+        {ElementaryType::F16, "F16"},
         {ElementaryType::F32, "F32"},
         {ElementaryType::F64, "F64"},
     };
 
-    inline uint64_t getBitwidth(ElementaryType type) {
+    inline static uint64_t getBitwidth(ElementaryType type) {
         if (type == ElementaryType::I8 || type == ElementaryType::U8)
             return 8;
-        if (type == ElementaryType::I16 || type == ElementaryType::U16)
+        if (type == ElementaryType::I16 || type == ElementaryType::U16
+            || type == ElementaryType::F16)
             return 16;
         if (type == ElementaryType::I32 || type == ElementaryType::U32
             || type == ElementaryType::F32)
@@ -82,16 +86,14 @@ namespace ssa {
             return 128;
         if (type == ElementaryType::ISIZE || type == ElementaryType::USIZE)
             return Info::getInstance().getModule().getDataLayout().getPointerSizeInBits();
-        std::exit(1);
+        std::terminate();
     }
 
-    template<typename T>
-    ElementaryType from_string(const std::string& type) {
-        static_assert(std::is_same_v<T, ElementaryType>);
+    inline static ElementaryType toElementaryType(const std::string& type) {
         return str2type.at(type);
     }
 
-    inline std::string to_string(ElementaryType type) {
+    inline static std::string to_string(ElementaryType type) {
         return type2str.at(type);
     }
 }

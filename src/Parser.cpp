@@ -223,11 +223,11 @@ std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
 }
 
 // ::=name:type
-std::unique_ptr<TypeName> Parser::parseTypeNameExpr() {
+std::unique_ptr<VariableDefinition> Parser::parseTypeNameExpr() {
     getNextToken(); // <name>
     auto name = lexer->getIdentifierVal();
     getNextToken(); // :
     getNextToken(); // <type>
     const auto type_str = lexer->getIdentifierVal();
-    return std::make_unique<TypeName>(name, type_str);
+    return std::make_unique<VariableDefinition>(name, type_str);
 }

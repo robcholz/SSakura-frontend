@@ -3,6 +3,7 @@
 //
 #include "ast/IfExprAST.hpp"
 #include "Info.hpp"
+#include "type/BooleanComparison.hpp"
 
 
 IfExprAST::IfExprAST(std::unique_ptr<ExprAST> condition, std::unique_ptr<ExprAST> thenExpr,
@@ -19,7 +20,6 @@ llvm::Value* IfExprAST::codeGen() {
     auto *cond_value = this->condition->codeGen();
     if (!cond_value)
         return nullptr;
-    cond_value = ir_builder.CreateFCmpONE(cond_value, llvm::ConstantFP::get(context, llvm::APFloat(0.0)), "ifcond");
     const auto func = ir_builder.GetInsertBlock()->getParent();
     auto then_func_block = llvm::BasicBlock::Create(context, "then", func);
     auto else_func_block = llvm::BasicBlock::Create(context, "else");

@@ -7,6 +7,7 @@
 #define SSAKURA_NUMBEREXPRAST_HPP
 
 #include "ExprAST.hpp"
+#include "type/VariableConstant.hpp"
 
 
 namespace llvm {
@@ -20,17 +21,7 @@ public:
     llvm::Value* codeGen() final;
 
 private:
-    using integer_t = long;
-    using floating_t = long double;
-
-    enum Type {
-        INTEGER,
-        FLOATING,
-    };
-
-    Type type;
-    integer_t integer;
-    floating_t floating;
+    VariableConstant constant;
 };
 
 #endif //SSAKURA_NUMBEREXPRAST_HPP

@@ -1,6 +1,6 @@
-PROCEDURE foo(x:I32):I32{
-    IF(2){
-     RETURN foo(2+4*3)
+PROCEDURE foo(x:F32):I8{
+    IF(x<3){
+     RETURN foo(2)
     }
     ELSE{
      RETURN foo(2)

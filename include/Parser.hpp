@@ -15,7 +15,7 @@
 #include "ast/ProtoTypeAST.hpp"
 #include "ast/FunctionAST.hpp"
 #include "rule/ParameterList.hpp"
-#include "rule/TypeName.hpp"
+#include "type/VariableDefinition.hpp"
 
 
 class Parser {
@@ -39,7 +39,7 @@ private:
     std::unique_ptr<ExprAST> parseReturnExpr();
     std::unique_ptr<ExprAST> parsePrimaryExpr();
     std::unique_ptr<ParameterList> parseParamListExpr();
-    std::unique_ptr<TypeName> parseTypeNameExpr();
+    std::unique_ptr<VariableDefinition> parseTypeNameExpr();
 
 private:
     const std::map<char, int> binaryOPPrecedence = {

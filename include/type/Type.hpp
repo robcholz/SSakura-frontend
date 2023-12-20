@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <llvm/IR/Type.h>
 #include "ElementaryType.hpp"
 
 
@@ -18,14 +19,13 @@ public:
 
     explicit Type(ElementaryType type);
 
-    ElementaryType getWrappedType()const;
-
+    ElementaryType getWrappedType() const;
     uint64_t getBitWidth() const;
-
     bool isFloat() const;
     bool isInteger() const;
-
-    const Type& getType()const;
+    bool isSigned() const;
+    const Type& getType() const;
+    llvm::Type* toLLVMType() const;
 
 private:
     uint64_t bitwidth;

@@ -6,8 +6,8 @@ set_targetdir("bin")
 
 add_requires("conan::catch2/3.4.0",{alias="catch"})
 add_requires("conan::spdlog/[>=1.4.1]",{alias="logging"})
+add_requires("conan::boost/1.81.0",{alias = "boost",configs={math=true}})
 
---add_requires("conan::boost/1.81.0",{alias = "boost"})
 --add_requires("conan::nlohmann_json/3.7.3",{alias = "json"})
 
 target("fixed-containers")
@@ -24,6 +24,7 @@ target("SSakura-frontend")
     add_files("$(projectdir)/src/**.cpp")
     add_deps("fixed-containers")
     add_packages("logging")
+    add_packages("boost")
 target_end()
 
 target("SSakura-Test")

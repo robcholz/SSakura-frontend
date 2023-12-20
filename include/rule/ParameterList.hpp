@@ -9,22 +9,22 @@
 #include <memory>
 #include <vector>
 
-#include "TypeName.hpp"
+#include "../type/VariableDefinition.hpp"
 
 
 class ParameterList {
 public:
-    void add(std::unique_ptr<TypeName> type);
+    void add(std::unique_ptr<VariableDefinition> type);
     size_t size() const;
 
     // return a copy of parameters
-    std::vector<TypeName> getParameters() const ;
+    std::vector<VariableDefinition> getParameters() const ;
 
     static ParameterList emptyParamList() {
         return ParameterList{};
     }
 private:
-    std::vector<std::unique_ptr<TypeName>> parameters{};
+    std::vector<std::unique_ptr<VariableDefinition>> parameters{};
 };
 
 #endif //SSAKURA_FRONTEND_PARAMETERLIST_HPP

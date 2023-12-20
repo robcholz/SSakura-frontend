@@ -54,22 +54,23 @@ public:
         TYPE_U64=-29, // unsigned 64bit integer
         TYPE_U128=-30, // unsigned 128bit integer
         TYPE_USIZE=-31, // 64bit unsigned long, used for container length/size
-        TYPE_F32=-32, // 32bit floating type
-        TYPE_F64=-33, // 64bit floating
-        TYPE_BOOLEAN=-34, // boolean
-        TYPE_STRING=-35, // string type
-        TYPE_CHAR=-36, // char type
+        TYPE_F16=-32,
+        TYPE_F32=-33, // 32bit floating type
+        TYPE_F64=-34, // 64bit floating
+        TYPE_BOOLEAN=-35, // boolean
+        TYPE_STRING=-36, // string type
+        TYPE_CHAR=-37, // char type
 
         // literals
-        LITERAL_STRING=-37, // string literal
-        LITERAL_CHAR=-38, // char literal
+        LITERAL_STRING=-38, // string literal
+        LITERAL_CHAR=-39, // char literal
 
         // indicators
-        IDENTIFIER = -39, // variable identifier
-        NUMBER = -40, // numeric val/
+        IDENTIFIER = -40, // variable identifier
+        NUMBER = -41, // numeric val/
 
         // typedef
-        USE=-41, // give a alias name to a type
+        USE=-42, // give a alias name to a type
 
         // ?
         BRACE=-43, // {

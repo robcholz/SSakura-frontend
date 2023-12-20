@@ -26,27 +26,13 @@ llvm::Function* PrototypeAST::codeGen() {
 
     params.reserve(arguements->size());
 
-    static auto type2LLVMType = [&](const Type& type)-> llvm::Type* {
-        if (type.isInteger()) {
-            return llvm::IntegerType::get(context, type.getBitWidth());
-        } else if (type.isFloat()) {
-            if (type.getBitWidth() == 32) {
-                return llvm::Type::getFloatTy(context);
-            } else {
-                return llvm::Type::getDoubleTy(context);
-            }
-        }
-        return nullptr;
-        // TODO implment more types
-    };
-
     for (const auto& element: immutable_arguments) {
-        if(auto converted_type=type2LLVMType(element.getType())) {
+        if(auto converted_type=element.toLLVMType()) {
             params.push_back(converted_type);
         }
     }
 
-    llvm::Type* return_type = type2LLVMType(returnType);
+    llvm::Type* return_type = this->returnType.toLLVMType();
 
     llvm::FunctionType* function_type = llvm::FunctionType::get(return_type, params, false);
     llvm::Function* prototype = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, name, module);
