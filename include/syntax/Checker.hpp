@@ -40,17 +40,17 @@ public:
 
     static std::string getNextVerifyThisToken(Parser* parser, const std::string& expect);
 
-    static std::string getNextVerifyThisToken(Parser* parser, Lexer::Keyword token);
+    static std::string getNextVerifyThisToken(Parser* parser, ssa::Keyword token);
 
     static std::string getNextVerifyNextToken(Parser* parser, const std::string& expect);
 
     static std::string getNextVerifyNextToken(Parser* parser, const std::vector<std::string_view>& expect);
 
-    static bool promiseCurrentToken(Parser* parser, Lexer::Keyword token);
+    static bool promiseCurrentToken(Parser* parser, ssa::Keyword token);
 
     static bool promiseCurrentToken(Parser* parser, const std::string& token);
 
-    static bool promiseEatCurrentToken(Parser* parser, Lexer::Keyword token);
+    static bool promiseEatCurrentToken(Parser* parser, ssa::Keyword token);
 
     static bool promiseEatCurrentToken(Parser* parser, const std::string& token);
 

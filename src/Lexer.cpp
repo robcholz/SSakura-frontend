@@ -8,11 +8,12 @@
 #include "Lexer.hpp"
 
 
+using namespace ssa;
+
 Lexer::Lexer() {
     this->lastChar = ' ';
     this->currChar = EOF;
     this->currTokenCategory = TokenCategory{};
-    initialize();
 }
 
 void Lexer::readFile(const std::string& filename) {
@@ -24,7 +25,7 @@ void Lexer::closeFile() {
     file.close();
 }
 
-Lexer::ReservedSymbol_Underlying_t Lexer::getNextChar() {
+ReservedSymbol_Underlying_t Lexer::getNextChar() {
     ReservedSymbol_Underlying_t ch;
     file.get(ch);
     return ch;
@@ -42,48 +43,46 @@ std::string Lexer::getToken() {
             token.identifierVal.push_back(lastChar);
             lastChar = getNextChar();
         }
-
         // TokenCategory::KEYWORD
-        if (token.identifierVal == "PROCEDURE") {
-            return "PROCEDURE";
-        } else if (token.identifierVal == "IF") {
-            return "IF";
-        } else if (token.identifierVal == "ELSE") {
-            return "ELSE";
-        } else if (token.identifierVal == "EXTERN") {
-            return "EXTERN";
-        } else if (token.identifierVal == "RETURN") {
-            return "RETURN";
-        } else if (token.identifierVal == "REPEAT") {
-            return "REPEAT";
-        } else if (token.identifierVal == "UNTIL") {
-            return "UTIL";
-        } else if (token.identifierVal == "TIMES") {
-            return "TIMES";
+        if (keywordMap_s2e.contains(token.identifierVal)) {
+            currTokenCategory = TokenCategory::KEYWORD;
+            token.keyword = keywordMap_s2e.at(token.identifierVal);
+            return /*keywordMap_s2k.at*/(token.identifierVal);
         } else {
+            currTokenCategory = TokenCategory::IDENTIFIER;
             return "IDENTIFIER";
         }
     } // string
 
     // TokenCategory::LITERAL
     if (isDigit(lastChar) || equals(lastChar, '.')) {
+        currTokenCategory = TokenCategory::LITERAL;
         token.literalVal.clear();
         while (isDigit(lastChar) || equals(lastChar, '.')) {
             token.literalVal.push_back(lastChar);
             lastChar = getNextChar();
         }
-        currTokenCategory = TokenCategory::LITERAL;
         return "NUMBER";
     }
 
-    if (equals(lastChar, '#')) {
+    // comments
+    if (equals(lastChar, ReservedSymbol::HASHTAG)) {
         do
             lastChar = getNextChar();
         while (!equals(lastChar,EOF) && !equals(lastChar, '\n') && !equals(lastChar, '\r'));
         if (!equals(lastChar,EOF)) {
             return getToken();
         }
-    } // comments
+    }
+
+    if (reservedSymbolMap_e2s.contains(lastChar)) {
+        currTokenCategory = TokenCategory::SYMBOL;
+        token.symbolVal = static_cast<ReservedSymbol>(lastChar);
+    }
+    if (equals(lastChar,EOF)) {
+        currTokenCategory = TokenCategory::EOF_TERMINATOR;
+    }
+
     currChar = lastChar;
     lastChar = getNextChar();
     std::string result;
@@ -103,12 +102,15 @@ Lexer::TokenCategory Lexer::getTokenCategory() const {
     return currTokenCategory;
 }
 
-void Lexer::initialize() {
+void Lexer::init() {
     for (const auto& keyword: magic_enum::enum_values<Keyword>()) {
-        keywordMap.insert({keyword, std::string(magic_enum::enum_name<Keyword>(keyword))});
+        const auto& str = std::string(magic_enum::enum_name<Keyword>(keyword));
+        keywordMap_e2s.insert({keyword, str});
+        keywordMap_s2e.insert({str, keyword});
     }
-
     for (const auto& symbol: magic_enum::enum_values<ReservedSymbol>()) {
-        reservedSymbolMap.insert({symbol, static_cast<ReservedSymbol_Underlying_t>(symbol)});
+        const auto& ch = static_cast<ReservedSymbol_Underlying_t>(symbol);
+        reservedSymbolMap_s2e.insert({symbol, ch});
+        reservedSymbolMap_e2s.insert({ch, symbol});
     }
 }

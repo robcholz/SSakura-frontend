@@ -6,20 +6,20 @@
 #ifndef SSAKURA_FRONTEND_TYPE_HPP
 #define SSAKURA_FRONTEND_TYPE_HPP
 
-
 #include <string>
 
 #include <llvm/IR/Type.h>
-#include "ElementaryType.hpp"
+
+#include "ReservedWords.hpp"
 
 
 class Type {
 public:
     explicit Type(const std::string& type);
 
-    explicit Type(ElementaryType type);
+    explicit Type(ssa::Elementary type);
 
-    ElementaryType getWrappedType() const;
+    ssa::Elementary getWrappedType() const;
     uint64_t getBitWidth() const;
     bool isFloat() const;
     bool isInteger() const;
@@ -29,7 +29,7 @@ public:
 
 private:
     uint64_t bitwidth;
-    ElementaryType type;
+    ssa::Elementary type;
 };
 
 #endif //SSAKURA_FRONTEND_TYPE_HPP

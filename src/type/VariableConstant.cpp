@@ -2,8 +2,11 @@
 // Created by robcholz on 12/20/23.
 //
 #include "type/VariableConstant.hpp"
+#include "ElementaryType.hpp"
 #include "tools/Utilities.hpp"
 
+
+using namespace ssa;
 
 VariableConstant::VariableConstant(integer_t integer)
     : Type(deductType(integer)),
@@ -20,7 +23,7 @@ VariableConstant::VariableConstant(const std::string& number)
       constant(toNumeric(number).first) {
 }
 
-std::pair<VariableConstant::Numeric, ElementaryType> VariableConstant::toNumeric(const std::string& number) {
+std::pair<VariableConstant::Numeric, Elementary> VariableConstant::toNumeric(const std::string& number) {
     auto iterator = number.rbegin();
     const auto iterator_end = number.rend();
 
@@ -82,27 +85,27 @@ std::pair<VariableConstant::Numeric, ElementaryType> VariableConstant::toNumeric
     }
 }
 
-ElementaryType VariableConstant::deductType(floating_t floating) {
-    const auto min_bits = ssa::type::getMinBits(floating);
-    auto type = ElementaryType::F64;
+Elementary VariableConstant::deductType(floating_t floating) {
+    const auto min_bits = type::getMinBits(floating);
+    auto type = Elementary::F64;
     if (min_bits == 16)
-        type = ElementaryType::F16;
+        type = Elementary::F16;
     else if (min_bits == 32)
-        type = ElementaryType::F32;
+        type = Elementary::F32;
     else if (min_bits == 64)
-        type = ElementaryType::F64;
+        type = Elementary::F64;
     return type;
 }
 
-ElementaryType VariableConstant::deductType(integer_t integer) {
-    const auto min_bits = ssa::type::getMinBits(integer);
+Elementary VariableConstant::deductType(integer_t integer) {
+    const auto min_bits = type::getMinBits(integer);
     std::string type_str;
     if (min_bits.second == true)
         type_str = "I";
     else
         type_str = "U";
     type_str.append(std::to_string(min_bits.first));
-    return ssa::toElementaryType(type_str);
+    return ElementaryType::toElementaryType(type_str);
 }
 
 llvm::Value* VariableConstant::toLLVMConstant() const {

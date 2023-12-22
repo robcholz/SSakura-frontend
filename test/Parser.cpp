@@ -1,22 +1,22 @@
 //
 // Created by robcholz on 11/26/23.
 //
-#include "Parser.hpp"
+#include <iostream>
 
 #include <catch2/catch_all.hpp>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/IR/Value.h>
+#include <llvm/Bitcode/BitcodeWriter.h>
 #include "ast/FunctionAST.hpp"
+
 #include "Parser.hpp"
-
-#include <iostream>
-
+#include "Compiler.hpp"
 #include "Info.hpp"
 #include "Lexer.hpp"
-#include "llvm/Bitcode/BitcodeWriter.h"
 
 
 int main() {
+    Compiler::init();
     Lexer lexer;
     lexer.readFile("/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/test/parserExample.txt");
     auto parser = Parser(&lexer);

@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include <llvm/IR/Value.h>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include "Type.hpp"
@@ -34,9 +35,9 @@ private:
 
     Numeric constant;
 
-    static std::pair<Numeric, ElementaryType> toNumeric(const std::string& number);
-    static ElementaryType deductType(floating_t floating);
-    static ElementaryType deductType(integer_t integer);
+    static std::pair<Numeric, ssa::Elementary> toNumeric(const std::string& number);
+    static ssa::Elementary deductType(floating_t floating);
+    static ssa::Elementary deductType(integer_t integer);
 };
 
 #endif //SSAKURA_FRONTEND_VARIABLECONSTANT_HPP

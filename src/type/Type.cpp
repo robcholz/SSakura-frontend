@@ -2,20 +2,24 @@
 // Created by robcholz on 12/19/23.
 //
 #include "type/Type.hpp"
+#include "ElementaryType.hpp"
+
+
+using namespace ssa;
 
 Type::Type(const std::string& type) {
     // TODO we assume that type is a elementary type
-    this->type = ssa::toElementaryType(type);
-    this->bitwidth = ssa::getBitwidth(this->type);
+    this->type = ElementaryType::toElementaryType(type);
+    this->bitwidth = ElementaryType::getBitwidth(this->type);
 }
 
-Type::Type(ElementaryType type) {
+Type::Type(Elementary type) {
     this->type = type;
-    this->bitwidth = ssa::getBitwidth(type);
+    this->bitwidth = ElementaryType::getBitwidth(type);
 }
 
 
-ElementaryType Type::getWrappedType() const {
+Elementary Type::getWrappedType() const {
     return type;
 }
 
@@ -24,25 +28,25 @@ uint64_t Type::getBitWidth() const {
 }
 
 bool Type::isFloat() const {
-    if (type == ElementaryType::F16) return true;
-    if (type == ElementaryType::F32) return true;
-    if (type == ElementaryType::F64) return true;
+    if (type == Elementary::F16) return true;
+    if (type == Elementary::F32) return true;
+    if (type == Elementary::F64) return true;
     return false;
 }
 
 bool Type::isInteger() const {
-    if (type == ElementaryType::I8) return true;
-    if (type == ElementaryType::I16) return true;
-    if (type == ElementaryType::I32) return true;
-    if (type == ElementaryType::I64) return true;
-    if (type == ElementaryType::I128) return true;
-    if (type == ElementaryType::ISIZE) return true;
-    if (type == ElementaryType::U8) return true;
-    if (type == ElementaryType::U16) return true;
-    if (type == ElementaryType::U32) return true;
-    if (type == ElementaryType::U64) return true;
-    if (type == ElementaryType::U128) return true;
-    if (type == ElementaryType::USIZE) return true;
+    if (type == Elementary::I8) return true;
+    if (type == Elementary::I16) return true;
+    if (type == Elementary::I32) return true;
+    if (type == Elementary::I64) return true;
+    if (type == Elementary::I128) return true;
+    if (type == Elementary::ISIZE) return true;
+    if (type == Elementary::U8) return true;
+    if (type == Elementary::U16) return true;
+    if (type == Elementary::U32) return true;
+    if (type == Elementary::U64) return true;
+    if (type == Elementary::U128) return true;
+    if (type == Elementary::USIZE) return true;
     return false;
 }
 
@@ -50,12 +54,12 @@ bool Type::isSigned() const {
     if(isFloat())
         return true;
     if(isInteger()) {
-        if (type == ElementaryType::I8) return true;
-        if (type == ElementaryType::I16) return true;
-        if (type == ElementaryType::I32) return true;
-        if (type == ElementaryType::I64) return true;
-        if (type == ElementaryType::I128) return true;
-        if (type == ElementaryType::ISIZE) return true;
+        if (type == Elementary::I8) return true;
+        if (type == Elementary::I16) return true;
+        if (type == Elementary::I32) return true;
+        if (type == Elementary::I64) return true;
+        if (type == Elementary::I128) return true;
+        if (type == Elementary::ISIZE) return true;
         return false;
     }
     return false;
