@@ -3,13 +3,15 @@
 //
 #include "Lexer.hpp"
 
+#include <iostream>
+
 
 Lexer::Lexer() {
     this->lastChar = ' ';
-    this->currChar = -1;
+    this->currChar = EOF;
 }
 
-void Lexer::readFile(const std::string &filename) {
+void Lexer::readFile(const std::string& filename) {
     file.open(filename);
     while (!file.is_open());
 }
@@ -24,61 +26,96 @@ char Lexer::getNextChar() {
     return ch;
 }
 
-int Lexer::getToken() {
-    while (isspace(lastChar)) {
+std::string Lexer::getToken() {
+    while (isSpace(lastChar)) {
         lastChar = getNextChar();
     } // ignore space
-    if (isalpha(lastChar)) {
+    if (isAlpha(lastChar)) {
         identifierVal.clear();
-        while (isalnum(lastChar)) {
+        // TODO, make sure a number literal format
+        while (isNum(lastChar)) {
             identifierVal.push_back(lastChar);
             lastChar = getNextChar();
         }
         if (identifierVal == "PROCEDURE") {
-            return (int) Token::PROCEDURE;
+            return "PROCEDURE";
         } else if (identifierVal == "IF") {
-            return (int) Token::IF;
+            return "IF";
         } else if (identifierVal == "ELSE") {
-            return (int) Token::ELSE;
+            return "ELSE";
         } else if (identifierVal == "EXTERN") {
-            return (int) Token::EXTERN;
+            return "EXTERN";
         } else if (identifierVal == "RETURN") {
-            return (int) Token::RETURN;
+            return "RETURN";
         } else if (identifierVal == "REPEAT") {
-            return (int) Token::REPEAT;
+            return "REPEAT";
         } else if (identifierVal == "UNTIL") {
-            return (int) Token::UNTIL;
+            return "UTIL";
         } else if (identifierVal == "TIMES") {
-            return (int) Token::TIMES;
+            return "TIMES";
         } else {
-            return (int) Token::IDENTIFIER;
+            return "IDENTIFIER";
         }
     } // string
-    if (isdigit(lastChar) || lastChar == '.') {
+    if (isDigit(lastChar) || equals(lastChar, '.')) {
         numberVal.clear();
-        while (isdigit(lastChar) || lastChar == '.') {
+        while (isDigit(lastChar) || equals(lastChar, '.')) {
             numberVal.push_back(lastChar);
             lastChar = getNextChar();
         }
-        return (int) Token::NUMBER;
+        return "NUMBER";
     }
-    if (lastChar == '#') {
+    if (equals(lastChar, '#')) {
         do
             lastChar = getNextChar();
-        while (lastChar != EOF && lastChar != '\n' && lastChar != '\r');
-        if (lastChar != EOF) {
+        while (!equals(lastChar,EOF) && !equals(lastChar, '\n') && !equals(lastChar, '\r'));
+        if (!equals(lastChar,EOF)) {
             return getToken();
         }
-    }
+    } // comments
     currChar = lastChar;
     lastChar = getNextChar();
-    return (int) currChar;
+    std::string result;
+    result = currChar;
+    return result;
 }
 
-std::string Lexer::getNumberVal() const{
+std::string Lexer::getNumberVal() const {
     return numberVal;
 }
 
-std::string Lexer::getIdentifierVal() const{
+std::string Lexer::getIdentifierVal() const {
     return identifierVal;
+}
+
+bool Lexer::isSpace(const std::string_view& str) {
+    return allOf(str, [](const char ch)-> bool { return ch == ' '; });
+}
+
+bool Lexer::isSpace(char str) {
+    return isspace(str);
+}
+
+bool Lexer::isAlpha(const std::string_view& str) {
+    return allOf(str, [](const char ch)-> bool { return isalpha(ch); });
+}
+
+bool Lexer::isAlpha(char str) {
+    return isalpha(str);
+}
+
+bool Lexer::isNum(const std::string_view& str) {
+    return allOf(str, [](const char ch)-> bool { return isalnum(ch); });
+}
+
+bool Lexer::isNum(char str) {
+    return isalnum(str);
+}
+
+bool Lexer::isDigit(const std::string_view& str) {
+    return allOf(str, [](const char ch)-> bool { return isdigit(ch); });
+}
+
+bool Lexer::isDigit(char str) {
+    return isdigit(str);
 }

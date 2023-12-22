@@ -7,7 +7,7 @@
 #include "type/BooleanComparison.hpp"
 
 
-BinaryExprAST::BinaryExprAST(char op, std::unique_ptr<ExprAST> leftExprAst, std::unique_ptr<ExprAST> rightExprAst) {
+BinaryExprAST::BinaryExprAST(std::string op, std::unique_ptr<ExprAST> leftExprAst, std::unique_ptr<ExprAST> rightExprAst) {
     this->op = op;
     this->leftExprAst = std::move(leftExprAst);
     this->rightExprAst = std::move(rightExprAst);
@@ -17,13 +17,17 @@ llvm::Value* BinaryExprAST::codeGen() {
     const auto leftAst = leftExprAst->codeGen();
     const auto rightAst = rightExprAst->codeGen();
     auto& ir_builder = Info::getInstance().getIRBuilder();
-    switch (op) {
-        case '+': return ir_builder.CreateFAdd(leftAst, rightAst, "addtmp");
-        case '-': return ir_builder.CreateFSub(leftAst, rightAst, "subtmp");
-        case '*': return ir_builder.CreateFMul(leftAst, rightAst, "multmp");
-        case '<': return Comparison::lessThan(leftAst,rightAst);
-        case '>': return Comparison::greaterThan(leftAst,rightAst);
-        case '=': return Comparison::equality(leftAst,rightAst);
-        default: throw std::logic_error("unhandled operator");
-    }
+    if (op == "+")
+        return ir_builder.CreateFAdd(leftAst, rightAst, "addtmp");
+    if (op == "-")
+        return ir_builder.CreateFSub(leftAst, rightAst, "subtmp");
+    if (op == "*")
+        return ir_builder.CreateFMul(leftAst, rightAst, "multmp");
+    if (op == "<")
+        return Comparison::lessThan(leftAst, rightAst);
+    if (op == ">")
+        return Comparison::greaterThan(leftAst, rightAst);
+    if (op == "=")
+        return Comparison::equality(leftAst, rightAst);
+    throw std::logic_error("unhandled operator");
 }

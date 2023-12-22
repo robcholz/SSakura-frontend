@@ -22,8 +22,9 @@ class Parser {
 public:
     explicit Parser(Lexer* lexer);
     const Lexer* getLexer() const;
-    int getNextToken();
-    int getCurrentToken();
+    std::string getNextToken();
+    std::string getCurrentToken();
+
     std::unique_ptr<PrototypeAST> parsePrototypeExpr();
     std::unique_ptr<PrototypeAST> parseExternExpr();
     std::unique_ptr<FunctionAST> parseFunctionExpr();
@@ -43,11 +44,11 @@ private:
     std::unique_ptr<VariableDefinition> parseTypeNameExpr();
 
 private:
-    const std::map<char, int> binaryOPPrecedence = {
-        {'<', 10}, {'+', 20}, {'-', 20}, {'*', 40}};
+    const std::map<std::string_view, int> binaryOPPrecedence = {
+        {"<", 10}, {"+", 20}, {"-", 20}, {"*", 40}};
 
     Lexer* lexer;
-    int currentToken;
+    std::string currentToken;
 };
 
 #endif //SSAKURA_FRONTEND_PARSER_HPP

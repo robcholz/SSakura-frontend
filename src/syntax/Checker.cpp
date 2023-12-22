@@ -31,33 +31,26 @@ bool Checker::check(ErrorCode error, const std::vector<std::string_view>& expect
     return false;
 }
 
-int Checker::getNextVerifyThisToken(Parser* parser, const std::string& expect) {
-    const int result = parser->getCurrentToken();
-    std::string res;
-    res = static_cast<char>(result);
-    check(ErrorUnexpectedSymbol, expect, res);
-    return parser->getNextToken();
+std::string Checker::getNextVerifyThisToken(Parser* parser, const std::string& expect) {
+    check(ErrorUnexpectedSymbol, expect, parser->getCurrentToken());
+    return std::string{parser->getNextToken()};
 }
 
-int Checker::getNextVerifyThisToken(Parser* parser, Lexer::Token token) {
-    const auto result = parser->getLexer()->getIdentifierVal();
+std::string Checker::getNextVerifyThisToken(Parser* parser, Lexer::Token token) {
+    std::string result{parser->getLexer()->getIdentifierVal()};
     check(ErrorUnexpectedKeyword, magic_enum::enum_name(token), result);
     return parser->getNextToken();
 }
 
-int Checker::getNextVerifyNextToken(Parser* parser, const std::string& expect) {
-    const auto result = parser->getNextToken();
-    std::string res;
-    res = static_cast<char>(result);
-    check(ErrorUnexpectedKeyword, expect, res);
+std::string Checker::getNextVerifyNextToken(Parser* parser, const std::string& expect) {
+    std::string result{parser->getNextToken()};
+    check(ErrorUnexpectedKeyword, expect, result);
     return result;
 }
 
-int Checker::getNextVerifyNextToken(Parser* parser, const std::vector<std::string_view>& expect) {
-    const auto result = parser->getNextToken();
-    std::string res;
-    res = static_cast<char>(result);
-    check(ErrorUnexpectedKeyword, expect, res);
+std::string Checker::getNextVerifyNextToken(Parser* parser, const std::vector<std::string_view>& expect) {
+    std::string result{parser->getNextToken()};
+    check(ErrorUnexpectedKeyword, expect, result);
     return result;
 }
 

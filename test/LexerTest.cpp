@@ -2,6 +2,7 @@
 // Created by robcholz on 11/25/23.
 //
 #include <catch2/catch_all.hpp>
+#include <string>
 #include "Lexer.hpp"
 
 
@@ -12,9 +13,9 @@ TEST_CASE("Lexer Test Assertion") {
     SECTION("Parse Token") {
         std::ofstream file;
         file.open("/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/test/output.txt");
-        char ch = ' ';
+        std::string ch = "";
 
-        while (ch != EOF) {
+        while (ch != "EOF") {
             file << ch;
             ch = lexer.getToken();
         }

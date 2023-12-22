@@ -38,13 +38,13 @@ public:
 
     static bool check(ErrorCode error, const std::vector<std::string_view>& expect, const std::string_view& found);
 
-    static int getNextVerifyThisToken(Parser* parser, const std::string& expect);
+    static std::string getNextVerifyThisToken(Parser* parser, const std::string& expect);
 
-    static int getNextVerifyThisToken(Parser* parser, Lexer::Token token);
+    static std::string getNextVerifyThisToken(Parser* parser, Lexer::Token token);
 
-    static int getNextVerifyNextToken(Parser* parser, const std::string& expect);
+    static std::string getNextVerifyNextToken(Parser* parser, const std::string& expect);
 
-    static int getNextVerifyNextToken(Parser* parser, const std::vector<std::string_view>& expect);
+    static std::string getNextVerifyNextToken(Parser* parser, const std::vector<std::string_view>& expect);
 
     static bool promiseCurrentToken(Parser* parser, Lexer::Token token);
 

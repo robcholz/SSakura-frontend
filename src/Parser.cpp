@@ -18,23 +18,24 @@
 
 Parser::Parser(Lexer* lexer) {
     this->lexer = lexer;
-    this->currentToken = -1;
+    this->currentToken = "";
 }
 
 const Lexer* Parser::getLexer() const {
     return lexer;
 }
 
-int Parser::getNextToken() {
-    return currentToken = lexer->getToken();
+std::string Parser::getNextToken() {
+    currentToken = lexer->getToken();
+    return currentToken;
 }
 
-int Parser::getCurrentToken() {
+std::string Parser::getCurrentToken() {
     return currentToken;
 }
 
 int Parser::getTokenPrecedence() {
-    const auto token = static_cast<char>(getCurrentToken());
+    const auto token = getCurrentToken();
     if (binaryOPPrecedence.contains(token))
         return binaryOPPrecedence.at(token);
     return -1;
@@ -63,15 +64,15 @@ std::unique_ptr<ExprAST> Parser::parseParenthesisExpr() {
 std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
     auto identifier = lexer->getIdentifierVal();
     getNextToken();
-    if (getCurrentToken() != '(') {
+    if (getCurrentToken() != "(") {
         return std::make_unique<VariableExprAST>(identifier);
     } // ::=identifier
 
     Checker::getNextVerifyThisToken(this, "(");
     std::vector<std::unique_ptr<ExprAST>> arguments;
-    while (getCurrentToken() != ')') {
+    while (getCurrentToken() != ")") {
         arguments.push_back(parseExpr());
-        if (getCurrentToken() == ')') {
+        if (getCurrentToken() == ")") {
             break;
         } else {
             getNextToken();
@@ -86,21 +87,18 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
 /// ::=numberExpr
 /// ::=parenthesisExpr
 std::unique_ptr<ExprAST> Parser::parsePrimaryExpr() {
-    auto var_view = getCurrentToken();
-    switch (var_view) {
-        case (int) Lexer::Token::IDENTIFIER:
-            return parseIdentifierExpr();
-        case (int) Lexer::Token::NUMBER:
-            return parseNumberExpr();
-        case '(':
-            return parseParenthesisExpr();
-        case (int) Lexer::Token::IF:
-            return parseIfExpr();
-        case (int) Lexer::Token::RETURN:
-            return parseReturnExpr();
-        default:
-            return nullptr;
-    }
+    const auto var_view = getCurrentToken();
+    if(var_view=="IDENTIFIER")
+        return parseIdentifierExpr();
+    if(var_view=="NUMBER")
+        return parseNumberExpr();
+    if(var_view=="(")
+        return parseParenthesisExpr();
+    if(var_view=="IF")
+        return parseIfExpr();
+    if(var_view=="RETURN")
+        return parseReturnExpr();
+    return nullptr;
 }
 
 // leftExpr [binop primary] [binop primary] ...
@@ -110,7 +108,7 @@ std::unique_ptr<ExprAST> Parser::parseBinaryOPRightExpr(int minPrecedence, std::
         if (current_precedence < minPrecedence) {
             return leftExpr;
         }
-        int binaryOP = getCurrentToken();
+        const auto binaryOP = getCurrentToken();
         getNextToken(); // eat binop
         auto rightExpr = parsePrimaryExpr();
         const int next_precedence = getTokenPrecedence();
@@ -179,7 +177,7 @@ std::unique_ptr<ExprAST> Parser::parseIfExpr() {
     std::unique_ptr<ExprAST> condition = parseExpr();
     Checker::getNextVerifyThisToken(this, ")");
     Checker::getNextVerifyThisToken(this, "{");
-    std::unique_ptr<ExprAST> then_expr = parseExpr();
+    std::unique_ptr<ExprAST> then_expr = parseExpr(); // TODO ERROR OCCURED HERE
     Checker::getNextVerifyThisToken(this, "}");
     if (Checker::promiseEatCurrentToken(this, Lexer::Token::ELSE)) {
         Checker::getNextVerifyThisToken(this, "{");
@@ -217,7 +215,7 @@ std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
 std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
     // TODO
     auto parm_list = std::make_unique<ParameterList>(ParameterList::emptyParamList());
-    while (getCurrentToken() != ')') {
+    while (getCurrentToken() != ")") {
         auto type = parseTypeNameExpr();
         parm_list->add(std::move(type));
         Checker::getNextVerifyNextToken(this, std::vector<std::string_view>{")", ","});

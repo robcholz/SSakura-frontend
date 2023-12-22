@@ -24,13 +24,13 @@ int main() {
     bool flag = true;
     while (flag) {
         auto token = parser.getCurrentToken();
-        if (token == (int) Lexer::Token::TOK_EOF) {
+        if (token == "EOF") {
             flag = false;
-        } else if (token == (int) Lexer::Token::EXTERN) {
+        } else if (token == "EXTERN") {
             auto function = parser.parseExternExpr();
             function->codeGen()->print(llvm::errs());
             std::cout << ("parsed a function declration") << std::endl;
-        } else if (token == (int) Lexer::Token::PROCEDURE) {
+        } else if (token == "PROCEDURE") {
             auto function = parser.parseFunctionExpr();
             function->codeGen()->print(llvm::errs());
             std::cout << ("parsed a function definition") << std::endl;

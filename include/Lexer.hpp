@@ -7,6 +7,7 @@
 #define SSAKURA_FRONTEND_LEXER_HPP
 
 #include <string>
+#include <string_view>
 #include <fstream>
 
 
@@ -82,18 +83,45 @@ public:
     void readFile(const std::string& filename);
     void closeFile();
 
-    int getToken();
+    std::string getToken();
     std::string getNumberVal() const;
     std::string getIdentifierVal() const;
+
 private:
     char getNextChar();
-private:
     std::ifstream file;
     char lastChar;
     char currChar;
 
     std::string numberVal;   // filled in if TOKEN_NUMBER
     std::string identifierVal;  // filled in if TOKEN_IDENTIFIER
+
+    inline static bool allOf(const std::string_view& str,bool(*condition_function)(char)){
+        if (str.length() == 1)
+            return condition_function(str[0]);
+        for (const auto& ch: str) {
+            if (condition_function(ch) != ' ')
+                return false;
+        }
+        return true;
+    }
+
+    inline static bool equals(const std::string_view& str,char str_1) {
+        return str[0]==str_1;
+    }
+
+    inline static bool equals(char str,char str_1) {
+        return str==str_1;
+    }
+
+    static bool isSpace(const std::string_view& str);
+    static bool isSpace(char str);
+    static bool isAlpha(const std::string_view& str);
+    static bool isAlpha(char str);
+    static bool isNum(const std::string_view& str);
+    static bool isNum(char str);
+    static bool isDigit(const std::string_view& str);
+    static bool isDigit(char str);
 };
 
 #endif //SSAKURA_FRONTEND_LEXER_HPP
