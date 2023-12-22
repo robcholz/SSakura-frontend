@@ -83,8 +83,8 @@ public:
     void closeFile();
 
     int getToken();
-    std::string getNumberVal();
-    std::string getIdentifierVal();
+    std::string getNumberVal() const;
+    std::string getIdentifierVal() const;
 private:
     char getNextChar();
 private:

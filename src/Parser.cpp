@@ -3,6 +3,7 @@
 //
 #include <vector>
 
+#include <spdlog/spdlog.h>
 
 #include "Parser.hpp"
 #include "ast/ProtoTypeAST.hpp"
@@ -12,11 +13,16 @@
 #include "ast/IfExprAST.hpp"
 #include "ast/NumberExprAST.hpp"
 #include "ast/VariableExprAST.hpp"
+#include "syntax/Checker.hpp"
 
 
 Parser::Parser(Lexer* lexer) {
     this->lexer = lexer;
     this->currentToken = -1;
+}
+
+const Lexer* Parser::getLexer() const {
+    return lexer;
 }
 
 int Parser::getNextToken() {
@@ -28,7 +34,7 @@ int Parser::getCurrentToken() {
 }
 
 int Parser::getTokenPrecedence() {
-    auto token = static_cast<char>(getCurrentToken());
+    const auto token = static_cast<char>(getCurrentToken());
     if (binaryOPPrecedence.contains(token))
         return binaryOPPrecedence.at(token);
     return -1;
@@ -38,16 +44,16 @@ int Parser::getTokenPrecedence() {
 // ::=number
 std::unique_ptr<ExprAST> Parser::parseNumberExpr() {
     auto result = std::make_unique<NumberExprAST>(lexer->getNumberVal());
-    getNextToken();
+    getNextToken(); // eat number
     return std::move(result);
 }
 
 // parenthesisExpr
 // ::=(expr)
 std::unique_ptr<ExprAST> Parser::parseParenthesisExpr() {
-    getNextToken(); // eat (
+    Checker::getNextVerifyThisToken(this, "(");
     auto expr = parseExpr();
-    getNextToken(); // eat )
+    Checker::getNextVerifyThisToken(this, ")");
     return expr;
 }
 
@@ -61,7 +67,7 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
         return std::make_unique<VariableExprAST>(identifier);
     } // ::=identifier
 
-    getNextToken(); // eat '('
+    Checker::getNextVerifyThisToken(this, "(");
     std::vector<std::unique_ptr<ExprAST>> arguments;
     while (getCurrentToken() != ')') {
         arguments.push_back(parseExpr());
@@ -71,16 +77,17 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
             getNextToken();
         }
     }
-    getNextToken(); // eat ')'
+    Checker::getNextVerifyThisToken(this, ")");
     return std::make_unique<CallableExprAST>(identifier, std::move(arguments));
 }
 
-// primaryExpr
-// ::=identifierExpr
-// ::=numberExpr
-// ::=parenthesisExpr
+/// primaryExpr
+/// ::=identifierExpr
+/// ::=numberExpr
+/// ::=parenthesisExpr
 std::unique_ptr<ExprAST> Parser::parsePrimaryExpr() {
-    switch (getCurrentToken()) {
+    auto var_view = getCurrentToken();
+    switch (var_view) {
         case (int) Lexer::Token::IDENTIFIER:
             return parseIdentifierExpr();
         case (int) Lexer::Token::NUMBER:
@@ -125,29 +132,29 @@ std::unique_ptr<ExprAST> Parser::parseExpr() {
 //   ::= id (param_list_ast)
 std::unique_ptr<PrototypeAST> Parser::parsePrototypeExpr() {
     std::string function_name = lexer->getIdentifierVal();
-    getNextToken(); // (
+    Checker::getNextVerifyNextToken(this, "(");
     auto param_list = parseParamListExpr();
-    getNextToken(); // )
-    getNextToken(); // :
-    auto return_type_str=lexer->getIdentifierVal();
+    Checker::getNextVerifyThisToken(this, ")");
+    Checker::getNextVerifyThisToken(this, ":");
+    const auto return_type_str = lexer->getIdentifierVal();
     getNextToken(); // <type>
     return std::make_unique<PrototypeAST>(function_name,
-        std::move(param_list),
-        Type(return_type_str)
-        );
+                                          std::move(param_list),
+                                          Type(return_type_str)
+    );
 }
 
 std::unique_ptr<PrototypeAST> Parser::parseExternExpr() {
-    getNextToken();
+    Checker::getNextVerifyThisToken(this, Lexer::Token::EXTERN);
     return parsePrototypeExpr();
 }
 
 std::unique_ptr<FunctionAST> Parser::parseFunctionExpr() {
-    getNextToken(); // eat PRODCEDURE
+    Checker::getNextVerifyThisToken(this, Lexer::Token::PROCEDURE);
     auto proto = parsePrototypeExpr();
-    getNextToken(); // eat {
+    Checker::getNextVerifyThisToken(this, "{");
     auto expr = parseExpr();
-    getNextToken(); // eat }
+    Checker::getNextVerifyThisToken(this, "}");
     auto result = std::make_unique<FunctionAST>(std::move(proto), std::move(expr));
     return std::move(result);
 }
@@ -167,49 +174,45 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseIfExpr() {
-    getNextToken(); // eat if
-    getNextToken(); // eat (
+    Checker::getNextVerifyThisToken(this, Lexer::Token::IF); // eat if
+    Checker::getNextVerifyThisToken(this, "(");
     std::unique_ptr<ExprAST> condition = parseExpr();
-    getNextToken(); // eat )
-    getNextToken(); // eat {
+    Checker::getNextVerifyThisToken(this, ")");
+    Checker::getNextVerifyThisToken(this, "{");
     std::unique_ptr<ExprAST> then_expr = parseExpr();
-    getNextToken(); // eat }
-    if (getCurrentToken() == (int) Lexer::Token::ELSE) {
-        getNextToken(); // eat else
-        getNextToken(); // eat {
+    Checker::getNextVerifyThisToken(this, "}");
+    if (Checker::promiseEatCurrentToken(this, Lexer::Token::ELSE)) {
+        Checker::getNextVerifyThisToken(this, "{");
         std::unique_ptr<ExprAST> else_expr = parseExpr();
-        getNextToken(); // eat }
+        Checker::getNextVerifyThisToken(this, "}");
         return std::make_unique<IfExprAST>(std::move(condition), std::move(then_expr), std::move(else_expr));
     }
     return std::make_unique<IfExprAST>(std::move(condition), std::move(then_expr), nullptr);
 }
 
 std::unique_ptr<ExprAST> Parser::parseRepeatExpr() {
-    getNextToken(); // eat REPEAT
-    if (getCurrentToken() == '(') {
-        getNextToken(); // eat (
+    Checker::getNextVerifyThisToken(this, Lexer::Token::REPEAT);
+    if (Checker::promiseEatCurrentToken(this, "(")) {
         auto condition_expr = parseExpr();
-        getNextToken(); // eat )
-        getNextToken(); // eat TIMES
-    } else if (getCurrentToken() == (int) Lexer::Token::UNTIL) {
-        getNextToken(); // eat UNTIL
+        Checker::getNextVerifyThisToken(this, ")");
+        Checker::getNextVerifyThisToken(this, Lexer::Token::TIMES);
+    } else if (Checker::promiseEatCurrentToken(this, Lexer::Token::UNTIL)) {
         auto condition_expr = parseExpr();
     } else {
         // TODO SYNTAX ERROR
     }
-    getNextToken(); // eat {
+    Checker::getNextVerifyThisToken(this, "{");
     auto body_expr = parseExpr();
-    getNextToken(); // eat }
+    Checker::getNextVerifyThisToken(this, "}");
     return std::move(body_expr);
 }
 
 std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
-    getNextToken(); // eat RETURN
+    Checker::getNextVerifyThisToken(this, Lexer::Token::RETURN);
     auto returned_expr = parseExpr();
     return std::move(returned_expr);
 }
 
-// ::=name:type,name:type,
 // ::=name:type,name:type
 std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
     // TODO
@@ -217,7 +220,7 @@ std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
     while (getCurrentToken() != ')') {
         auto type = parseTypeNameExpr();
         parm_list->add(std::move(type));
-        getNextToken(); // ,
+        Checker::getNextVerifyNextToken(this, std::vector<std::string_view>{")", ","});
     }
     return std::move(parm_list);
 }
@@ -226,7 +229,7 @@ std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
 std::unique_ptr<VariableDefinition> Parser::parseTypeNameExpr() {
     getNextToken(); // <name>
     auto name = lexer->getIdentifierVal();
-    getNextToken(); // :
+    Checker::getNextVerifyNextToken(this, ":");
     getNextToken(); // <type>
     const auto type_str = lexer->getIdentifierVal();
     return std::make_unique<VariableDefinition>(name, type_str);

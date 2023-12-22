@@ -31,7 +31,9 @@ lines = [
     'add_definitions(${LLVM_DEFINITIONS_LIST})\n',
     '# visit https://releases.llvm.org/2.7/docs/UsingLibraries.html for more info \n'
     'llvm_map_components_to_libnames(llvm_libs support core irreader ipo)\n',
-    'target_link_libraries(SSakura-frontend PRIVATE ${llvm_libs})\n'
+    'target_link_libraries(SSakura-frontend PRIVATE ${llvm_libs})\n',
+    'target_include_directories(SSakura-frontend PUBLIC ${'
+    'CMAKE_CURRENT_SOURCE_DIR}/third-party/fixed-containers/include)\n'
 ]
 with open(root_dir + "/CMakeLists.txt", 'a') as file:
     file.writelines(lines)

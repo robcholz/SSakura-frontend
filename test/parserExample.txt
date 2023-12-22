@@ -1,5 +1,5 @@
-PROCEDURE foo(x:F32):I8{
-    IF(x<3){
+PROCEDURE foo(x:F32,y:U8):I8{
+    IF(3<x){
      RETURN foo(2)
     }
     ELSE{

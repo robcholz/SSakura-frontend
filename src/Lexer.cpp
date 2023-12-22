@@ -36,8 +36,6 @@ int Lexer::getToken() {
         }
         if (identifierVal == "PROCEDURE") {
             return (int) Token::PROCEDURE;
-        } else if (identifierVal == "{") {
-            return (int) Token::BRACE;
         } else if (identifierVal == "IF") {
             return (int) Token::IF;
         } else if (identifierVal == "ELSE") {
@@ -77,10 +75,10 @@ int Lexer::getToken() {
     return (int) currChar;
 }
 
-std::string Lexer::getNumberVal() {
+std::string Lexer::getNumberVal() const{
     return numberVal;
 }
 
-std::string Lexer::getIdentifierVal() {
+std::string Lexer::getIdentifierVal() const{
     return identifierVal;
 }

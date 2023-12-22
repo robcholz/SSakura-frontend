@@ -21,6 +21,7 @@
 class Parser {
 public:
     explicit Parser(Lexer* lexer);
+    const Lexer* getLexer() const;
     int getNextToken();
     int getCurrentToken();
     std::unique_ptr<PrototypeAST> parsePrototypeExpr();
