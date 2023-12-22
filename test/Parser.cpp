@@ -24,7 +24,7 @@ int main() {
     bool flag = true;
     while (flag) {
         auto token = parser.getCurrentToken();
-        if (token == "EOF") {
+        if (token == "\xff") {
             flag = false;
         } else if (token == "EXTERN") {
             auto function = parser.parseExternExpr();

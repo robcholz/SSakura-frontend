@@ -1,14 +1,18 @@
 //
 // Created by robcholz on 11/25/23.
 //
-#include "Lexer.hpp"
-
 #include <iostream>
+
+#include <magic_enum/magic_enum.hpp>
+
+#include "Lexer.hpp"
 
 
 Lexer::Lexer() {
     this->lastChar = ' ';
     this->currChar = EOF;
+    this->currTokenCategory = TokenCategory{};
+    initialize();
 }
 
 void Lexer::readFile(const std::string& filename) {
@@ -20,8 +24,8 @@ void Lexer::closeFile() {
     file.close();
 }
 
-char Lexer::getNextChar() {
-    char ch;
+Lexer::ReservedSymbol_Underlying_t Lexer::getNextChar() {
+    ReservedSymbol_Underlying_t ch;
     file.get(ch);
     return ch;
 }
@@ -30,41 +34,48 @@ std::string Lexer::getToken() {
     while (isSpace(lastChar)) {
         lastChar = getNextChar();
     } // ignore space
+
     if (isAlpha(lastChar)) {
-        identifierVal.clear();
+        token.identifierVal.clear();
         // TODO, make sure a number literal format
         while (isNum(lastChar)) {
-            identifierVal.push_back(lastChar);
+            token.identifierVal.push_back(lastChar);
             lastChar = getNextChar();
         }
-        if (identifierVal == "PROCEDURE") {
+
+        // TokenCategory::KEYWORD
+        if (token.identifierVal == "PROCEDURE") {
             return "PROCEDURE";
-        } else if (identifierVal == "IF") {
+        } else if (token.identifierVal == "IF") {
             return "IF";
-        } else if (identifierVal == "ELSE") {
+        } else if (token.identifierVal == "ELSE") {
             return "ELSE";
-        } else if (identifierVal == "EXTERN") {
+        } else if (token.identifierVal == "EXTERN") {
             return "EXTERN";
-        } else if (identifierVal == "RETURN") {
+        } else if (token.identifierVal == "RETURN") {
             return "RETURN";
-        } else if (identifierVal == "REPEAT") {
+        } else if (token.identifierVal == "REPEAT") {
             return "REPEAT";
-        } else if (identifierVal == "UNTIL") {
+        } else if (token.identifierVal == "UNTIL") {
             return "UTIL";
-        } else if (identifierVal == "TIMES") {
+        } else if (token.identifierVal == "TIMES") {
             return "TIMES";
         } else {
             return "IDENTIFIER";
         }
     } // string
+
+    // TokenCategory::LITERAL
     if (isDigit(lastChar) || equals(lastChar, '.')) {
-        numberVal.clear();
+        token.literalVal.clear();
         while (isDigit(lastChar) || equals(lastChar, '.')) {
-            numberVal.push_back(lastChar);
+            token.literalVal.push_back(lastChar);
             lastChar = getNextChar();
         }
+        currTokenCategory = TokenCategory::LITERAL;
         return "NUMBER";
     }
+
     if (equals(lastChar, '#')) {
         do
             lastChar = getNextChar();
@@ -81,41 +92,23 @@ std::string Lexer::getToken() {
 }
 
 std::string Lexer::getNumberVal() const {
-    return numberVal;
+    return token.literalVal;
 }
 
 std::string Lexer::getIdentifierVal() const {
-    return identifierVal;
+    return token.identifierVal;
 }
 
-bool Lexer::isSpace(const std::string_view& str) {
-    return allOf(str, [](const char ch)-> bool { return ch == ' '; });
+Lexer::TokenCategory Lexer::getTokenCategory() const {
+    return currTokenCategory;
 }
 
-bool Lexer::isSpace(char str) {
-    return isspace(str);
-}
+void Lexer::initialize() {
+    for (const auto& keyword: magic_enum::enum_values<Keyword>()) {
+        keywordMap.insert({keyword, std::string(magic_enum::enum_name<Keyword>(keyword))});
+    }
 
-bool Lexer::isAlpha(const std::string_view& str) {
-    return allOf(str, [](const char ch)-> bool { return isalpha(ch); });
-}
-
-bool Lexer::isAlpha(char str) {
-    return isalpha(str);
-}
-
-bool Lexer::isNum(const std::string_view& str) {
-    return allOf(str, [](const char ch)-> bool { return isalnum(ch); });
-}
-
-bool Lexer::isNum(char str) {
-    return isalnum(str);
-}
-
-bool Lexer::isDigit(const std::string_view& str) {
-    return allOf(str, [](const char ch)-> bool { return isdigit(ch); });
-}
-
-bool Lexer::isDigit(char str) {
-    return isdigit(str);
+    for (const auto& symbol: magic_enum::enum_values<ReservedSymbol>()) {
+        reservedSymbolMap.insert({symbol, static_cast<ReservedSymbol_Underlying_t>(symbol)});
+    }
 }

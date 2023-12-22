@@ -27,6 +27,7 @@ const Lexer* Parser::getLexer() const {
 
 std::string Parser::getNextToken() {
     currentToken = lexer->getToken();
+    spdlog::info(currentToken);
     return currentToken;
 }
 
@@ -143,12 +144,12 @@ std::unique_ptr<PrototypeAST> Parser::parsePrototypeExpr() {
 }
 
 std::unique_ptr<PrototypeAST> Parser::parseExternExpr() {
-    Checker::getNextVerifyThisToken(this, Lexer::Token::EXTERN);
+    Checker::getNextVerifyThisToken(this, Lexer::Keyword::EXTERN);
     return parsePrototypeExpr();
 }
 
 std::unique_ptr<FunctionAST> Parser::parseFunctionExpr() {
-    Checker::getNextVerifyThisToken(this, Lexer::Token::PROCEDURE);
+    Checker::getNextVerifyThisToken(this, Lexer::Keyword::PROCEDURE);
     auto proto = parsePrototypeExpr();
     Checker::getNextVerifyThisToken(this, "{");
     auto expr = parseExpr();
@@ -172,14 +173,14 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseIfExpr() {
-    Checker::getNextVerifyThisToken(this, Lexer::Token::IF); // eat if
+    Checker::getNextVerifyThisToken(this, Lexer::Keyword::IF); // eat if
     Checker::getNextVerifyThisToken(this, "(");
     std::unique_ptr<ExprAST> condition = parseExpr();
     Checker::getNextVerifyThisToken(this, ")");
     Checker::getNextVerifyThisToken(this, "{");
     std::unique_ptr<ExprAST> then_expr = parseExpr(); // TODO ERROR OCCURED HERE
     Checker::getNextVerifyThisToken(this, "}");
-    if (Checker::promiseEatCurrentToken(this, Lexer::Token::ELSE)) {
+    if (Checker::promiseEatCurrentToken(this, Lexer::Keyword::ELSE)) {
         Checker::getNextVerifyThisToken(this, "{");
         std::unique_ptr<ExprAST> else_expr = parseExpr();
         Checker::getNextVerifyThisToken(this, "}");
@@ -189,12 +190,12 @@ std::unique_ptr<ExprAST> Parser::parseIfExpr() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseRepeatExpr() {
-    Checker::getNextVerifyThisToken(this, Lexer::Token::REPEAT);
+    Checker::getNextVerifyThisToken(this, Lexer::Keyword::REPEAT);
     if (Checker::promiseEatCurrentToken(this, "(")) {
         auto condition_expr = parseExpr();
         Checker::getNextVerifyThisToken(this, ")");
-        Checker::getNextVerifyThisToken(this, Lexer::Token::TIMES);
-    } else if (Checker::promiseEatCurrentToken(this, Lexer::Token::UNTIL)) {
+        Checker::getNextVerifyThisToken(this, Lexer::Keyword::TIMES);
+    } else if (Checker::promiseEatCurrentToken(this, Lexer::Keyword::UNTIL)) {
         auto condition_expr = parseExpr();
     } else {
         // TODO SYNTAX ERROR
@@ -206,7 +207,7 @@ std::unique_ptr<ExprAST> Parser::parseRepeatExpr() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
-    Checker::getNextVerifyThisToken(this, Lexer::Token::RETURN);
+    Checker::getNextVerifyThisToken(this, Lexer::Keyword::RETURN);
     auto returned_expr = parseExpr();
     return std::move(returned_expr);
 }

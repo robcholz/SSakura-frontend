@@ -40,28 +40,30 @@ public:
 
     static std::string getNextVerifyThisToken(Parser* parser, const std::string& expect);
 
-    static std::string getNextVerifyThisToken(Parser* parser, Lexer::Token token);
+    static std::string getNextVerifyThisToken(Parser* parser, Lexer::Keyword token);
 
     static std::string getNextVerifyNextToken(Parser* parser, const std::string& expect);
 
     static std::string getNextVerifyNextToken(Parser* parser, const std::vector<std::string_view>& expect);
 
-    static bool promiseCurrentToken(Parser* parser, Lexer::Token token);
+    static bool promiseCurrentToken(Parser* parser, Lexer::Keyword token);
 
     static bool promiseCurrentToken(Parser* parser, const std::string& token);
 
-    static bool promiseEatCurrentToken(Parser* parser,Lexer::Token token);
+    static bool promiseEatCurrentToken(Parser* parser, Lexer::Keyword token);
 
-    static bool promiseEatCurrentToken(Parser* parser,const std::string& token);
+    static bool promiseEatCurrentToken(Parser* parser, const std::string& token);
 
     static void check(int result, ErrorCode error, const std::string& expect);
 
 private:
     Checker() = default;
 
+    ~Checker() = default;
+
     inline static std::unordered_map<ErrorCode, std::string> errorCodeMap;
 
-    inline static auto getErrorHintMap = []()-> std::unordered_map<ErrorCode, std::string> {
+    inline static const auto getErrorHintMap = []()-> const std::unordered_map<ErrorCode, std::string>& {
         auto addItem = [&](ErrorCode item) {
             errorCodeMap.insert({item, std::string(magic_enum::enum_name(item)) + ": %s but found %s"});
         };
