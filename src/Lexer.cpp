@@ -31,7 +31,7 @@ ssa::ReservedSymbol_Underlying_t Lexer::getNextChar() {
     return ch;
 }
 
-std::string Lexer::getToken() {
+Lexer::Token Lexer::getToken() {
     while (isSpace(lastChar)) {
         lastChar = getNextChar();
     } // ignore space
@@ -47,11 +47,11 @@ std::string Lexer::getToken() {
         if (ssa::contains<ssa::Keyword>(pattern)) {
             token.category = TokenCategory::KEYWORD;
             token.tokens = ssa::from_string<ssa::Keyword>(pattern);
-            return /*keywordMap_s2k.at*/(pattern);
+            return token;
         } else {
             token.category = TokenCategory::IDENTIFIER;
             token.tokens = pattern;
-            return "IDENTIFIER";
+            return token;
         }
     } // string
 
@@ -64,7 +64,7 @@ std::string Lexer::getToken() {
             lastChar = getNextChar();
         }
         token.tokens = pattern;
-        return "NUMBER";
+        return token;
     }
 
     // comments
@@ -90,9 +90,11 @@ std::string Lexer::getToken() {
 
     currChar = lastChar;
     lastChar = getNextChar();
+
+    // TODO fix this
     std::string result;
     result = currChar;
-    return result;
+    return token;
 }
 
 std::string Lexer::getTokenInString() const {

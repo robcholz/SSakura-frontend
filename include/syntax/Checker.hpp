@@ -6,12 +6,13 @@
 #ifndef SSAKURA_FRONTEND_CHECKER_HPP
 #define SSAKURA_FRONTEND_CHECKER_HPP
 
+#include <iostream>
 #include <vector>
 #include <string>
-#include <string_view>
 #include <unordered_map>
 
 #include <magic_enum/magic_enum.hpp>
+#include <boost/format.hpp>
 
 #include "Parser.hpp"
 
@@ -34,27 +35,23 @@ public:
 
     static Checker& getInstance();
 
-    static bool check(ErrorCode error, const std::string_view& expect, const std::string_view& found);
+    static const Lexer::Token& getNextVerifyThisToken(Parser* parser, ssa::Keyword keyword);
 
-    static bool check(ErrorCode error, const std::vector<std::string_view>& expect, const std::string_view& found);
+    static const Lexer::Token& getNextVerifyThisToken(Parser* parser, ssa::ReservedSymbol symbol);
 
-    static std::string getNextVerifyThisToken(Parser* parser, const std::string& expect);
+    static const Lexer::Token& getNextVerifyNextToken(Parser* parser, ssa::Keyword keyword);
 
-    static std::string getNextVerifyThisToken(Parser* parser, ssa::Keyword token);
+    static const Lexer::Token& getNextVerifyNextToken(Parser* parser, ssa::ReservedSymbol symbol);
 
-    static std::string getNextVerifyNextToken(Parser* parser, const std::string& expect);
+    static const Lexer::Token& getNextVerifyNextToken(Parser* parser, const std::vector<ssa::ReservedSymbol>& symbols);
 
-    static std::string getNextVerifyNextToken(Parser* parser, const std::vector<std::string_view>& expect);
+    static bool verifyCurrentToken(const Parser* parser, ssa::Keyword token, bool silence = false);
 
-    static bool promiseCurrentToken(Parser* parser, ssa::Keyword token);
+    static bool verifyCurrentToken(const Parser* parser, ssa::ReservedSymbol symbol, bool silence = false);
 
-    static bool promiseCurrentToken(Parser* parser, const std::string& token);
+    static bool verifyEatCurrentToken(Parser* parser, ssa::Keyword keyword);
 
-    static bool promiseEatCurrentToken(Parser* parser, ssa::Keyword token);
-
-    static bool promiseEatCurrentToken(Parser* parser, const std::string& token);
-
-    static void check(int result, ErrorCode error, const std::string& expect);
+    static bool verifyEatCurrentToken(Parser* parser, ssa::ReservedSymbol symbol);
 
 private:
     Checker() = default;
@@ -72,6 +69,66 @@ private:
         }
         return errorCodeMap;
     }();
+
+    template<typename T>
+    inline static void emitError(ErrorCode error, const T& expect, const T& found) {
+        std::cout << boost::format(getErrorHintMap.at(error)) % ssa::to_string(expect)
+                % ssa::to_string(found) << std::endl;
+    }
+
+    template<typename T>
+    inline static bool verify(ErrorCode error, const T& expect, const Lexer::Token& token, bool silence) {
+        if (token.is<T>()) {
+            const auto& found = token.get<T>();
+            if (expect != found) {
+                if (!silence)
+                    emitError(error, expect, found);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    template<typename T>
+    inline static bool verify(ErrorCode error, const std::vector<T>& expects, const Lexer::Token& token) {
+        if (token.is<T>()) {
+            const auto& found = token.get<T>();
+            for (const auto& element: expects) {
+                if (element == found) {
+                    return true;
+                }
+            }
+            std::cout << boost::format(getErrorHintMap.at(error)) % ssa::to_string(found) << std::endl;
+        }
+        std::cout << boost::format(getErrorHintMap.at(error)) % "No Match" << std::endl;
+        return false;
+    }
+
+    template<typename T>
+    inline static const Lexer::Token& getNextVerifyNextToken(Parser* parser, ErrorCode error, const T& expect) {
+        const Lexer::Token& token = parser->getNextToken();
+        verify<T>(error, expect, token, false);
+        return token;
+    }
+
+    template<typename T>
+    inline static const Lexer::Token& getNextVerifyNextToken(Parser* parser, ErrorCode error, const std::vector<T>& expects) {
+        const Lexer::Token& token = parser->getNextToken();
+        verify<T>(error, expects, token);
+        return token;
+    }
+
+    template<typename T>
+    inline static const Lexer::Token& getNextVerifyThisToken(Parser* parser, ErrorCode error, const T& expect) {
+        verify<T>(error, expect, parser->getCurrentToken(), false);
+        return parser->getNextToken();
+    }
+
+    template<typename T>
+    inline static bool verifyCurrentToken(const Parser* parser, ErrorCode error, const T& expect, bool silence) {
+        return verify<T>(error, expect, parser->getCurrentToken(), silence);
+    }
 };
 
 #endif //SSAKURA_FRONTEND_CHECKER_HPP

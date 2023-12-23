@@ -1,10 +1,6 @@
 //
 // Created by robcholz on 12/22/23.
 //
-#include <iostream>
-
-#include <boost/format.hpp>
-
 #include "syntax/Checker.hpp"
 
 
@@ -13,74 +9,46 @@ Checker& Checker::getInstance() {
     return checker;
 }
 
-bool Checker::check(ErrorCode error, const std::string_view& expect, const std::string_view& found) {
-    if (expect != found) {
-        std::cout << boost::format(getErrorHintMap.at(error)) % expect % found << std::endl;
-        return false;
-    }
-    return true;
+const Lexer::Token& Checker::getNextVerifyThisToken(Parser* parser, ssa::Keyword keyword) {
+    return getNextVerifyThisToken<ssa::Keyword>(parser, ErrorUnexpectedKeyword, keyword);
 }
 
-bool Checker::check(ErrorCode error, const std::vector<std::string_view>& expect, const std::string_view& found) {
-    for (const auto& element: expect) {
-        if (element == found) {
-            return true;
-        }
-    }
-    std::cout << boost::format(getErrorHintMap.at(error)) % "hi" % found << std::endl;
-    return false;
+const Lexer::Token& Checker::getNextVerifyThisToken(Parser* parser, ssa::ReservedSymbol symbol) {
+    return getNextVerifyThisToken<ssa::ReservedSymbol>(parser, ErrorUnexpectedSymbol, symbol);
 }
 
-std::string Checker::getNextVerifyThisToken(Parser* parser, const std::string& expect) {
-    check(ErrorUnexpectedSymbol, expect, parser->getCurrentToken());
-    return parser->getNextToken();
+const Lexer::Token& Checker::getNextVerifyNextToken(Parser* parser, ssa::Keyword keyword) {
+    return getNextVerifyNextToken<ssa::Keyword>(parser, ErrorUnexpectedKeyword, keyword);
 }
 
-// TODO figure out this werid behavior
-std::string Checker::getNextVerifyThisToken(Parser* parser, ssa::Keyword token) {
-    const auto& result=ssa::to_string( parser->getLexer()->getKeyword());
-    check(ErrorUnexpectedKeyword, magic_enum::enum_name(token), result);
-    return parser->getNextToken();
+const Lexer::Token& Checker::getNextVerifyNextToken(Parser* parser, ssa::ReservedSymbol symbol) {
+    return getNextVerifyNextToken<ssa::ReservedSymbol>(parser, ErrorUnexpectedSymbol, symbol);
 }
 
-std::string Checker::getNextVerifyNextToken(Parser* parser, const std::string& expect) {
-    std::string result{parser->getNextToken()};
-    check(ErrorUnexpectedKeyword, expect, result);
-    return result;
+const Lexer::Token& Checker::getNextVerifyNextToken(Parser* parser, const std::vector<ssa::ReservedSymbol>& symbols) {
+    return getNextVerifyNextToken<ssa::ReservedSymbol>(parser, ErrorUnexpectedSymbol, symbols);
 }
 
-std::string Checker::getNextVerifyNextToken(Parser* parser, const std::vector<std::string_view>& expect) {
-    std::string result{parser->getNextToken()};
-    check(ErrorUnexpectedKeyword, expect, result);
-    return result;
+bool Checker::verifyCurrentToken(const Parser* parser, ssa::Keyword keyword,bool silence) {
+    return verifyCurrentToken<ssa::Keyword>(parser, ErrorUnexpectedKeyword, keyword,silence);
 }
 
-bool Checker::promiseCurrentToken(Parser* parser, ssa::Keyword token) {
-    const auto res = ssa::to_string(parser->getLexer()->getKeyword());
-    return check(ErrorUnexpectedKeyword, magic_enum::enum_name(token), res);
+bool Checker::verifyCurrentToken(const Parser* parser, ssa::ReservedSymbol symbol,bool silence) {
+    return verifyCurrentToken<ssa::ReservedSymbol>(parser, ErrorUnexpectedSymbol, symbol,silence);
 }
 
-bool Checker::promiseCurrentToken(Parser* parser, const std::string& token) {
-    const auto res = parser->getLexer()->getIdentifierVal();
-    return check(ErrorUnexpectedKeyword, token, res);
-}
-
-bool Checker::promiseEatCurrentToken(Parser* parser, ssa::Keyword token) {
-    if (promiseCurrentToken(parser, token)) {
+bool Checker::verifyEatCurrentToken(Parser* parser, ssa::Keyword keyword) {
+    if (verifyCurrentToken(parser, keyword)) {
         parser->getNextToken();
         return true;
     }
     return false;
 }
 
-bool Checker::promiseEatCurrentToken(Parser* parser, const std::string& token) {
-    if (promiseCurrentToken(parser, token)) {
+bool Checker::verifyEatCurrentToken(Parser* parser, ssa::ReservedSymbol symbol) {
+    if (verifyCurrentToken(parser, symbol)) {
         parser->getNextToken();
         return true;
     }
     return false;
-}
-
-void Checker::check(int result, ErrorCode error, const std::string& expect) {
-    std::cout << boost::format(getErrorHintMap.at(error)) % expect % std::string(1, static_cast<char>(result)) << std::endl;
 }

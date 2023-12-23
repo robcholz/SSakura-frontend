@@ -23,13 +23,13 @@ int main() {
     bool flag = true;
     while (flag) {
         auto token = parser.getCurrentToken();
-        if (token == "\xff") {
+        if (token.isEOF()) {
             flag = false;
-        } else if (token == "EXTERN") {
+        } else if (token.isKeyword() && token.getKeyword() == ssa::Keyword::EXTERN) {
             auto function = parser.parseExternExpr();
             function->codeGen()->print(llvm::errs());
             std::cout << ("parsed a function declration") << std::endl;
-        } else if (token == "PROCEDURE") {
+        } else if (token.isKeyword() && token.getKeyword() == ssa::Keyword::PROCEDURE) {
             auto function = parser.parseFunctionExpr();
             function->codeGen()->print(llvm::errs());
             std::cout << ("parsed a function definition") << std::endl;

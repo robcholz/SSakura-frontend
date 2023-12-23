@@ -29,6 +29,7 @@ target("SSakura-Test")
     add_deps("SSakura-frontend")
     add_packages("catch")
     add_packages("llvm")
+    add_packages("logging")
 target_end()
 
 

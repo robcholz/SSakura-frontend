@@ -15,11 +15,7 @@ TEST_CASE("Lexer Test Assertion") {
         file.open("/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/test/output.txt");
         std::string ch = "";
 
-        while (ch != "EOF") {
-            file << ch;
-            ch = lexer.getToken();
-        }
-        file.close();
+
     }
     lexer.closeFile();
 }

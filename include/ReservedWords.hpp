@@ -8,6 +8,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <spdlog/spdlog.h>
 
 
 class ssa {
@@ -69,6 +70,7 @@ public:
         HYPEN = '-',
         ASTERISK = '*',
         SLASH = '/',
+        EQUAL_SIGN = '=',
         BACKSLASH = '\\',
         APOSTROPHE = '\'',
         QUOTE = '\"',
@@ -111,6 +113,22 @@ public:
         F64,
     };
 
+    /// these are not keywords
+    enum class BinaryOperator:int {
+        ADD,
+        MINUS,
+        MULTIPLE,
+        DIVISON,
+        MOD,
+        GREATER,
+        LESS,
+
+        EQUAL,
+        NOT,
+        AND,
+        OR,
+    };
+
     static void init();
 
     /// \param number
@@ -125,29 +143,46 @@ public:
     inline static const T& from_string(const std::string& key) {
         static_assert(std::is_same_v<T, Elementary> || std::is_same_v<T, Keyword>);
         if constexpr (std::is_same_v<T, Elementary>) {
-            return _elementMap_s2e.at(key);
+            if (_elementMap_s2e.contains(key))
+                return _elementMap_s2e.at(key);
+            spdlog::error("No keyword found in s2e map");
+            return {};
         }
         if constexpr (std::is_same_v<T, Keyword>) {
-            return _keywordMap_s2e.at(key);
+            if (_keywordMap_s2e.contains(key))
+                return _keywordMap_s2e.at(key);
+            spdlog::error("No keyword found in s2k map");
+            return {};
         }
     }
 
     template<typename T>
     inline static const T& from_string(const ReservedSymbol_Underlying_t& key) {
         static_assert(std::is_same_v<T, ReservedSymbol>);
-        return _reservedSymbolMap_s2e.at(key);
+        if (_reservedSymbolMap_s2e.contains(key))
+            return _reservedSymbolMap_s2e.at(key);
+        spdlog::error("No keyword found in s2r map");
+        return {};
     }
 
     inline static std::string to_string(Elementary elementary) {
-        return _elementMap_e2s.at(elementary);
+        if (_elementMap_e2s.contains(elementary))
+            return _elementMap_e2s.at(elementary);
+        spdlog::error("No keyword found in e2s map");
+        return "";
     }
 
     inline static std::string to_string(Keyword keyword) {
-        return _keywordMap_e2s.at(keyword);
+        if (_keywordMap_e2s.contains(keyword))
+            return _keywordMap_e2s.at(keyword);
+        spdlog::error("No keyword found in k2s map");
+        return "";
     }
 
     inline static std::string to_string(ReservedSymbol symbol) {
-        return {1, static_cast<ReservedSymbol_Underlying_t>(symbol)};
+        std::string result;
+        result = static_cast<ReservedSymbol_Underlying_t>(symbol);
+        return result;
     }
 
     template<typename T>

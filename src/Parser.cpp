@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 
 #include "Parser.hpp"
+#include "BinaryOperator.hpp"
 #include "ast/ProtoTypeAST.hpp"
 #include "ast/FunctionAST.hpp"
 #include "ast/BinaryExprAST.hpp"
@@ -15,45 +16,40 @@
 #include "ast/VariableExprAST.hpp"
 #include "syntax/Checker.hpp"
 
-#include <iostream>
-
 
 Parser::Parser(Lexer* lexer) {
     this->lexer = lexer;
-    this->currentToken = "";
+    this->currentToken = Lexer::Token{};
 }
 
 const Lexer* Parser::getLexer() const {
     return lexer;
 }
 
-std::string Parser::getNextToken() {
+const Lexer::Token& Parser::getNextToken() {
     currentToken = lexer->getToken();
-    std::cout<<lexer->getTokenInString()<<" ";
     switch (lexer->getTokenCategory()) {
         case Lexer::TokenCategory::KEYWORD: spdlog::info(ssa::to_string(lexer->getKeyword()));
-        break;
+            break;
         case Lexer::TokenCategory::SYMBOL: spdlog::info(ssa::to_string(lexer->getSymbol()));
-        break;
+            break;
         case Lexer::TokenCategory::LITERAL: spdlog::info(lexer->getLiteralVal());
-        break;
+            break;
         case Lexer::TokenCategory::IDENTIFIER: spdlog::info(lexer->getIdentifierVal());
-        break;
+            break;
         case Lexer::TokenCategory::EOF_TERMINATOR: spdlog::info("_TERMINATE_");
-        break;
+            break;
     }
     return currentToken;
 }
 
-std::string Parser::getCurrentToken() {
+const Lexer::Token& Parser::getCurrentToken() const {
     return currentToken;
 }
 
-int Parser::getTokenPrecedence() {
-    const auto token = getCurrentToken();
-    if (binaryOPPrecedence.contains(token))
-        return binaryOPPrecedence.at(token);
-    return -1;
+int Parser::getTokenPrecedence() const {
+    const auto& token = getCurrentToken();
+    return BinaryOperator::getPrecedence(token);
 }
 
 // numberExpr
@@ -67,9 +63,9 @@ std::unique_ptr<ExprAST> Parser::parseNumberExpr() {
 // parenthesisExpr
 // ::=(expr)
 std::unique_ptr<ExprAST> Parser::parseParenthesisExpr() {
-    Checker::getNextVerifyThisToken(this, "(");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LPAREN);
     auto expr = parseExpr();
-    Checker::getNextVerifyThisToken(this, ")");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RPAREN);
     return expr;
 }
 
@@ -78,22 +74,23 @@ std::unique_ptr<ExprAST> Parser::parseParenthesisExpr() {
 // ::=identifier(expr,expr,...)
 std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
     auto identifier = lexer->getIdentifierVal();
-    getNextToken();
-    if (getCurrentToken() != "(") {
+    getNextToken(); // eat identifier
+    if (!Checker::verifyCurrentToken(this,ssa::ReservedSymbol::LPAREN,true)) {
         return std::make_unique<VariableExprAST>(identifier);
     } // ::=identifier
 
-    Checker::getNextVerifyThisToken(this, "(");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LPAREN);
+    // TODO
     std::vector<std::unique_ptr<ExprAST>> arguments;
-    while (getCurrentToken() != ")") {
+    while (!Checker::verifyCurrentToken(this,ssa::ReservedSymbol::RPAREN,true)) {
         arguments.push_back(parseExpr());
-        if (getCurrentToken() == ")") {
+        if (Checker::verifyCurrentToken(this,ssa::ReservedSymbol::RPAREN,true)) {
             break;
         } else {
             getNextToken();
         }
     }
-    Checker::getNextVerifyThisToken(this, ")");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RPAREN);
     return std::make_unique<CallableExprAST>(identifier, std::move(arguments));
 }
 
@@ -102,16 +99,16 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
 /// ::=numberExpr
 /// ::=parenthesisExpr
 std::unique_ptr<ExprAST> Parser::parsePrimaryExpr() {
-    const auto var_view = getCurrentToken();
-    if(var_view=="IDENTIFIER")
+    const auto token = getCurrentToken();
+    if (token.isIdentifier())
         return parseIdentifierExpr();
-    if(var_view=="NUMBER")
+    if (token.isLiteral())
         return parseNumberExpr();
-    if(var_view=="(")
+    if (token.isSymbol() && token.getSymbol() == ssa::ReservedSymbol::LPAREN)
         return parseParenthesisExpr();
-    if(var_view=="IF")
+    if (token.isKeyword() && token.getKeyword() == ssa::Keyword::IF)
         return parseIfExpr();
-    if(var_view=="RETURN")
+    if (token.isKeyword() && token.getKeyword() == ssa::Keyword::RETURN)
         return parseReturnExpr();
     return nullptr;
 }
@@ -123,7 +120,7 @@ std::unique_ptr<ExprAST> Parser::parseBinaryOPRightExpr(int minPrecedence, std::
         if (current_precedence < minPrecedence) {
             return leftExpr;
         }
-        const auto binaryOP = getCurrentToken();
+        const ssa::BinaryOperator binaryOP = BinaryOperator::getOperator(getCurrentToken());
         getNextToken(); // eat binop
         auto rightExpr = parsePrimaryExpr();
         const int next_precedence = getTokenPrecedence();
@@ -144,11 +141,11 @@ std::unique_ptr<ExprAST> Parser::parseExpr() {
 // prototype
 //   ::= id (param_list_ast)
 std::unique_ptr<PrototypeAST> Parser::parsePrototypeExpr() {
-    std::string function_name = lexer->getIdentifierVal();
-    Checker::getNextVerifyNextToken(this, "(");
+    std::string function_name = getCurrentToken().getIdentifier();
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LPAREN);
     auto param_list = parseParamListExpr();
-    Checker::getNextVerifyThisToken(this, ")");
-    Checker::getNextVerifyThisToken(this, ":");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RPAREN);
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::COLON);
     const auto return_type_str = lexer->getIdentifierVal();
     getNextToken(); // <type>
     return std::make_unique<PrototypeAST>(function_name,
@@ -165,9 +162,9 @@ std::unique_ptr<PrototypeAST> Parser::parseExternExpr() {
 std::unique_ptr<FunctionAST> Parser::parseFunctionExpr() {
     Checker::getNextVerifyThisToken(this, ssa::Keyword::PROCEDURE);
     auto proto = parsePrototypeExpr();
-    Checker::getNextVerifyThisToken(this, "{");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LBRACE);
     auto expr = parseExpr();
-    Checker::getNextVerifyThisToken(this, "}");
+    Checker::getNextVerifyThisToken(this,ssa::ReservedSymbol::RBRACE);
     auto result = std::make_unique<FunctionAST>(std::move(proto), std::move(expr));
     return std::move(result);
 }
@@ -188,35 +185,35 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
 
 std::unique_ptr<ExprAST> Parser::parseIfExpr() {
     Checker::getNextVerifyThisToken(this, ssa::Keyword::IF); // eat if
-    Checker::getNextVerifyThisToken(this, "(");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LPAREN);
     std::unique_ptr<ExprAST> condition = parseExpr();
-    Checker::getNextVerifyThisToken(this, ")");
-    Checker::getNextVerifyThisToken(this, "{");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RPAREN);
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LBRACE);
     std::unique_ptr<ExprAST> then_expr = parseExpr(); // TODO ERROR OCCURED HERE
-    Checker::getNextVerifyThisToken(this, "}");
-    if (Checker::promiseEatCurrentToken(this, ssa::Keyword::ELSE)) {
-        Checker::getNextVerifyThisToken(this, "{");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RBRACE);
+    if (Checker::verifyEatCurrentToken(this, ssa::Keyword::ELSE)) {
+        Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LBRACE);
         std::unique_ptr<ExprAST> else_expr = parseExpr();
-        Checker::getNextVerifyThisToken(this, "}");
+        Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RBRACE);
         return std::make_unique<IfExprAST>(std::move(condition), std::move(then_expr), std::move(else_expr));
     }
     return std::make_unique<IfExprAST>(std::move(condition), std::move(then_expr), nullptr);
 }
 
 std::unique_ptr<ExprAST> Parser::parseRepeatExpr() {
-    Checker::getNextVerifyThisToken(this,ssa:: Keyword::REPEAT);
-    if (Checker::promiseEatCurrentToken(this, "(")) {
+    Checker::getNextVerifyThisToken(this, ssa::Keyword::REPEAT);
+    if (Checker::verifyEatCurrentToken(this, ssa::ReservedSymbol::LPAREN)) {
         auto condition_expr = parseExpr();
-        Checker::getNextVerifyThisToken(this, ")");
+        Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RPAREN);
         Checker::getNextVerifyThisToken(this, ssa::Keyword::TIMES);
-    } else if (Checker::promiseEatCurrentToken(this,ssa:: Keyword::UNTIL)) {
+    } else if (Checker::verifyEatCurrentToken(this, ssa::Keyword::UNTIL)) {
         auto condition_expr = parseExpr();
     } else {
         // TODO SYNTAX ERROR
     }
-    Checker::getNextVerifyThisToken(this, "{");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LBRACE);
     auto body_expr = parseExpr();
-    Checker::getNextVerifyThisToken(this, "}");
+    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RBRACE);
     return std::move(body_expr);
 }
 
@@ -230,10 +227,11 @@ std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
 std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
     // TODO
     auto parm_list = std::make_unique<ParameterList>(ParameterList::emptyParamList());
-    while (getCurrentToken() != ")") {
+    while (!Checker::verifyCurrentToken(this, ssa::ReservedSymbol::RPAREN,true)) {
         auto type = parseTypeNameExpr();
         parm_list->add(std::move(type));
-        Checker::getNextVerifyNextToken(this, std::vector<std::string_view>{")", ","});
+        Checker::getNextVerifyNextToken(this,
+            std::vector{ssa::ReservedSymbol::RPAREN, ssa::ReservedSymbol::COMMA});
     }
     return std::move(parm_list);
 }
@@ -242,7 +240,7 @@ std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
 std::unique_ptr<VariableDefinition> Parser::parseTypeNameExpr() {
     getNextToken(); // <name>
     auto name = lexer->getIdentifierVal();
-    Checker::getNextVerifyNextToken(this, ":");
+    Checker::getNextVerifyNextToken(this, ssa::ReservedSymbol::COLON);
     getNextToken(); // <type>
     const auto type_str = lexer->getIdentifierVal();
     return std::make_unique<VariableDefinition>(name, type_str);

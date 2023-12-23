@@ -7,16 +7,16 @@
 #define SSAKURA_FRONTEND_BINARYEXPRAST_HPP
 
 #include <memory>
-#include <string>
 #include "ExprAST.hpp"
+#include "ReservedWords.hpp"
 
 
 class BinaryExprAST : public ExprAST {
 public:
-    explicit BinaryExprAST(std::string op,std::unique_ptr<ExprAST> leftExprAst,std::unique_ptr<ExprAST> rightExprAst);
+    explicit BinaryExprAST(ssa::BinaryOperator op,std::unique_ptr<ExprAST> leftExprAst,std::unique_ptr<ExprAST> rightExprAst);
     llvm::Value* codeGen() final;
 private:
-    std::string op;
+    ssa::BinaryOperator op;
     std::unique_ptr<ExprAST> leftExprAst;
     std::unique_ptr<ExprAST> rightExprAst;
 };
