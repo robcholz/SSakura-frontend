@@ -146,7 +146,7 @@ public:
             if (_elementMap_s2e.contains(key))
                 return _elementMap_s2e.at(key);
             spdlog::error("No keyword found in s2e map");
-            return {};
+            return {}; // TODO
         }
         if constexpr (std::is_same_v<T, Keyword>) {
             if (_keywordMap_s2e.contains(key))

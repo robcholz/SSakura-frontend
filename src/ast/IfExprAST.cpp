@@ -3,7 +3,6 @@
 //
 #include "ast/IfExprAST.hpp"
 #include "Info.hpp"
-#include "type/BooleanComparison.hpp"
 
 
 IfExprAST::IfExprAST(std::unique_ptr<ExprAST> condition, std::unique_ptr<ExprAST> thenExpr,

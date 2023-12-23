@@ -35,6 +35,7 @@ private:
     int getTokenPrecedence()const;
     std::unique_ptr<ExprAST> parseNumberExpr();
     std::unique_ptr<ExprAST> parseParenthesisExpr();
+    std::unique_ptr<ExprAST> parseBraceExpr();
     std::unique_ptr<ExprAST> parseIdentifierExpr();
     std::unique_ptr<ExprAST> parseBinaryOPRightExpr(int minPrecedence,std::unique_ptr<ExprAST> leftExpr);
     std::unique_ptr<ExprAST> parseExpr();

@@ -39,11 +39,11 @@ public:
             return std::get<ssa::Keyword>(tokens);
         }
 
-        std::string getLiteral() const {
+        const std::string& getLiteral() const {
             return std::get<std::string>(tokens);
         }
 
-        std::string getIdentifier() const {
+        const std::string& getIdentifier() const {
             return std::get<std::string>(tokens);
         }
 
