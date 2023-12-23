@@ -2,11 +2,9 @@
 // Created by robcholz on 12/20/23.
 //
 #include "type/VariableConstant.hpp"
-#include "ElementaryType.hpp"
-#include "tools/Utilities.hpp"
+#include "ReservedWords.hpp"
+#include "Info.hpp"
 
-
-using namespace ssa;
 
 VariableConstant::VariableConstant(integer_t integer)
     : Type(deductType(integer)),
@@ -23,7 +21,7 @@ VariableConstant::VariableConstant(const std::string& number)
       constant(toNumeric(number).first) {
 }
 
-std::pair<VariableConstant::Numeric, Elementary> VariableConstant::toNumeric(const std::string& number) {
+std::pair<VariableConstant::Numeric, ssa::Elementary> VariableConstant::toNumeric(const std::string& number) {
     auto iterator = number.rbegin();
     const auto iterator_end = number.rend();
 
@@ -85,27 +83,27 @@ std::pair<VariableConstant::Numeric, Elementary> VariableConstant::toNumeric(con
     }
 }
 
-Elementary VariableConstant::deductType(floating_t floating) {
-    const auto min_bits = type::getMinBits(floating);
-    auto type = Elementary::F64;
+ssa::Elementary VariableConstant::deductType(floating_t floating) {
+    const auto min_bits = ssa::getMinBits(floating);
+    auto type = ssa::Elementary::F64;
     if (min_bits == 16)
-        type = Elementary::F16;
+        type = ssa::Elementary::F16;
     else if (min_bits == 32)
-        type = Elementary::F32;
+        type = ssa::Elementary::F32;
     else if (min_bits == 64)
-        type = Elementary::F64;
+        type = ssa::Elementary::F64;
     return type;
 }
 
-Elementary VariableConstant::deductType(integer_t integer) {
-    const auto min_bits = type::getMinBits(integer);
+ssa::Elementary VariableConstant::deductType(integer_t integer) {
+    const auto min_bits = ssa::getMinBits(integer);
     std::string type_str;
     if (min_bits.second == true)
         type_str = "I";
     else
         type_str = "U";
     type_str.append(std::to_string(min_bits.first));
-    return ElementaryType::toElementaryType(type_str);
+    return ssa::from_string<ssa::Elementary>(type_str);
 }
 
 llvm::Value* VariableConstant::toLLVMConstant() const {

@@ -15,8 +15,8 @@
 #include "ast/VariableExprAST.hpp"
 #include "syntax/Checker.hpp"
 
+#include <iostream>
 
-using namespace ssa;
 
 Parser::Parser(Lexer* lexer) {
     this->lexer = lexer;
@@ -29,7 +29,19 @@ const Lexer* Parser::getLexer() const {
 
 std::string Parser::getNextToken() {
     currentToken = lexer->getToken();
-    spdlog::info(currentToken);
+    std::cout<<lexer->getTokenInString()<<" ";
+    switch (lexer->getTokenCategory()) {
+        case Lexer::TokenCategory::KEYWORD: spdlog::info(ssa::to_string(lexer->getKeyword()));
+        break;
+        case Lexer::TokenCategory::SYMBOL: spdlog::info(ssa::to_string(lexer->getSymbol()));
+        break;
+        case Lexer::TokenCategory::LITERAL: spdlog::info(lexer->getLiteralVal());
+        break;
+        case Lexer::TokenCategory::IDENTIFIER: spdlog::info(lexer->getIdentifierVal());
+        break;
+        case Lexer::TokenCategory::EOF_TERMINATOR: spdlog::info("_TERMINATE_");
+        break;
+    }
     return currentToken;
 }
 
@@ -47,7 +59,7 @@ int Parser::getTokenPrecedence() {
 // numberExpr
 // ::=number
 std::unique_ptr<ExprAST> Parser::parseNumberExpr() {
-    auto result = std::make_unique<NumberExprAST>(lexer->getNumberVal());
+    auto result = std::make_unique<NumberExprAST>(lexer->getLiteralVal());
     getNextToken(); // eat number
     return std::move(result);
 }
@@ -146,12 +158,12 @@ std::unique_ptr<PrototypeAST> Parser::parsePrototypeExpr() {
 }
 
 std::unique_ptr<PrototypeAST> Parser::parseExternExpr() {
-    Checker::getNextVerifyThisToken(this, Keyword::EXTERN);
+    Checker::getNextVerifyThisToken(this, ssa::Keyword::EXTERN);
     return parsePrototypeExpr();
 }
 
 std::unique_ptr<FunctionAST> Parser::parseFunctionExpr() {
-    Checker::getNextVerifyThisToken(this, Keyword::PROCEDURE);
+    Checker::getNextVerifyThisToken(this, ssa::Keyword::PROCEDURE);
     auto proto = parsePrototypeExpr();
     Checker::getNextVerifyThisToken(this, "{");
     auto expr = parseExpr();
@@ -165,7 +177,7 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
         auto proto = std::make_unique<PrototypeAST>(
             "",
             std::make_unique<ParameterList>(ParameterList::emptyParamList()),
-            Type(Elementary::I32));
+            Type(ssa::Elementary::I32));
         return std::make_unique<FunctionAST>(
             std::move(proto),
             std::move(e)
@@ -175,14 +187,14 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseIfExpr() {
-    Checker::getNextVerifyThisToken(this, Keyword::IF); // eat if
+    Checker::getNextVerifyThisToken(this, ssa::Keyword::IF); // eat if
     Checker::getNextVerifyThisToken(this, "(");
     std::unique_ptr<ExprAST> condition = parseExpr();
     Checker::getNextVerifyThisToken(this, ")");
     Checker::getNextVerifyThisToken(this, "{");
     std::unique_ptr<ExprAST> then_expr = parseExpr(); // TODO ERROR OCCURED HERE
     Checker::getNextVerifyThisToken(this, "}");
-    if (Checker::promiseEatCurrentToken(this, Keyword::ELSE)) {
+    if (Checker::promiseEatCurrentToken(this, ssa::Keyword::ELSE)) {
         Checker::getNextVerifyThisToken(this, "{");
         std::unique_ptr<ExprAST> else_expr = parseExpr();
         Checker::getNextVerifyThisToken(this, "}");
@@ -192,12 +204,12 @@ std::unique_ptr<ExprAST> Parser::parseIfExpr() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseRepeatExpr() {
-    Checker::getNextVerifyThisToken(this, Keyword::REPEAT);
+    Checker::getNextVerifyThisToken(this,ssa:: Keyword::REPEAT);
     if (Checker::promiseEatCurrentToken(this, "(")) {
         auto condition_expr = parseExpr();
         Checker::getNextVerifyThisToken(this, ")");
-        Checker::getNextVerifyThisToken(this, Keyword::TIMES);
-    } else if (Checker::promiseEatCurrentToken(this, Keyword::UNTIL)) {
+        Checker::getNextVerifyThisToken(this, ssa::Keyword::TIMES);
+    } else if (Checker::promiseEatCurrentToken(this,ssa:: Keyword::UNTIL)) {
         auto condition_expr = parseExpr();
     } else {
         // TODO SYNTAX ERROR
@@ -209,7 +221,7 @@ std::unique_ptr<ExprAST> Parser::parseRepeatExpr() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
-    Checker::getNextVerifyThisToken(this, Keyword::RETURN);
+    Checker::getNextVerifyThisToken(this, ssa::Keyword::RETURN);
     auto returned_expr = parseExpr();
     return std::move(returned_expr);
 }

@@ -8,33 +8,47 @@
 
 #include <string>
 #include <string_view>
-#include <unordered_map>
+#include <variant>
 #include <fstream>
 
 #include "ReservedWords.hpp"
 
 
-class Lexer{
+class Lexer {
 public:
     enum class TokenCategory {
-        IDENTIFIER, // variables, functions,...
-        KEYWORD, // reserved words & keyword
-        LITERAL, // "1989" 'hi' 121331LU 198964
-        SYMBOL, // :./#
-        EOF_TERMINATOR, // indicate the termination of the file
+        IDENTIFIER,
+        // variables, functions,...
+        KEYWORD,
+        // reserved words & keyword
+        LITERAL,
+        // "1989" 'hi' 121331LU 198964
+        SYMBOL,
+        // :./#
+        EOF_TERMINATOR,
+        // indicate the termination of the file
     };
 
     Lexer();
-    ~Lexer()=default;
 
-    static void init();
+    ~Lexer() = default;
 
     void readFile(const std::string& filename);
+
     void closeFile();
 
     std::string getToken();
-    std::string getNumberVal() const;
+
+    /// valid only if getTokenCategory() not returns TokenCategory::EOF_TERMINATOR
+    std::string getTokenInString() const;
+
+    std::string getLiteralVal() const;
+
     std::string getIdentifierVal() const;
+
+    ssa::Keyword getKeyword() const;
+
+    ssa::ReservedSymbol getSymbol() const;
 
     TokenCategory getTokenCategory() const;
 
@@ -43,23 +57,21 @@ private:
 
     ssa::ReservedSymbol_Underlying_t lastChar;
     ssa::ReservedSymbol_Underlying_t currChar;
-    TokenCategory currTokenCategory;
+    std::string pattern;
 
     struct Token {
-        ssa::ReservedSymbol symbolVal; // filled in if SYMBOL
-        ssa::Keyword keyword;
-        std::string literalVal;   // filled in if LITERAL
-        std::string identifierVal;  // filled in if IDENTIFIER
-    }token;
+        /// symbol
+        /// keyword
+        /// literal | identifier
+        std::variant<ssa::ReservedSymbol, ssa::Keyword, std::string> tokens;
+        TokenCategory category;
+    };
 
-    inline static std::unordered_map<ssa::Keyword,std::string> keywordMap_e2s;
-    inline static std::unordered_map<std::string,ssa::Keyword> keywordMap_s2e;
-    inline static std::unordered_map<ssa::ReservedSymbol,ssa::ReservedSymbol_Underlying_t> reservedSymbolMap_s2e;
-    inline static std::unordered_map<ssa::ReservedSymbol_Underlying_t,ssa::ReservedSymbol> reservedSymbolMap_e2s;
+    Token token;
 
     ssa::ReservedSymbol_Underlying_t getNextChar();
 
-    inline static bool allOf(const std::string_view& str,bool(*condition_function)(char)){
+    inline static bool allOf(const std::string_view& str, bool (*condition_function)(char)) {
         if (str.length() == 1)
             return condition_function(str[0]);
         for (const auto& ch: str) {
@@ -70,22 +82,21 @@ private:
     }
 
     inline static bool equals(ssa::ReservedSymbol_Underlying_t str, ssa::ReservedSymbol symbol) {
-        return str==static_cast<ssa::ReservedSymbol_Underlying_t>(symbol);
-    }
-
-    inline static bool equals(ssa::ReservedSymbol_Underlying_t str,ssa::ReservedSymbol_Underlying_t str_1) {
-        return str==str_1;
+        return str == static_cast<ssa::ReservedSymbol_Underlying_t>(symbol);
     }
 
     inline static bool isSpace(ssa::ReservedSymbol_Underlying_t str) {
         return isspace(str);
     }
+
     inline static bool isAlpha(ssa::ReservedSymbol_Underlying_t str) {
         return isalpha(str);
     }
+
     inline static bool isNum(ssa::ReservedSymbol_Underlying_t str) {
         return isalnum(str);
     }
+
     inline static bool isDigit(ssa::ReservedSymbol_Underlying_t str) {
         return isdigit(str);
     }

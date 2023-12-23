@@ -10,13 +10,12 @@
 #include "ast/FunctionAST.hpp"
 
 #include "Parser.hpp"
-#include "Compiler.hpp"
 #include "Info.hpp"
 #include "Lexer.hpp"
 
 
 int main() {
-    Compiler::init();
+    ssa::init();
     Lexer lexer;
     lexer.readFile("/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/test/parserExample.txt");
     auto parser = Parser(&lexer);

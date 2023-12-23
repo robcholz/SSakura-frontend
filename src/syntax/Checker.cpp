@@ -8,8 +8,6 @@
 #include "syntax/Checker.hpp"
 
 
-using namespace ssa;
-
 Checker& Checker::getInstance() {
     static Checker checker;
     return checker;
@@ -39,8 +37,8 @@ std::string Checker::getNextVerifyThisToken(Parser* parser, const std::string& e
 }
 
 // TODO figure out this werid behavior
-std::string Checker::getNextVerifyThisToken(Parser* parser, Keyword token) {
-    std::string result{parser->getLexer()->getIdentifierVal()};
+std::string Checker::getNextVerifyThisToken(Parser* parser, ssa::Keyword token) {
+    const auto& result=ssa::to_string( parser->getLexer()->getKeyword());
     check(ErrorUnexpectedKeyword, magic_enum::enum_name(token), result);
     return parser->getNextToken();
 }
@@ -57,8 +55,8 @@ std::string Checker::getNextVerifyNextToken(Parser* parser, const std::vector<st
     return result;
 }
 
-bool Checker::promiseCurrentToken(Parser* parser, Keyword token) {
-    const auto res = parser->getLexer()->getIdentifierVal();
+bool Checker::promiseCurrentToken(Parser* parser, ssa::Keyword token) {
+    const auto res = ssa::to_string(parser->getLexer()->getKeyword());
     return check(ErrorUnexpectedKeyword, magic_enum::enum_name(token), res);
 }
 
@@ -67,7 +65,7 @@ bool Checker::promiseCurrentToken(Parser* parser, const std::string& token) {
     return check(ErrorUnexpectedKeyword, token, res);
 }
 
-bool Checker::promiseEatCurrentToken(Parser* parser, Keyword token) {
+bool Checker::promiseEatCurrentToken(Parser* parser, ssa::Keyword token) {
     if (promiseCurrentToken(parser, token)) {
         parser->getNextToken();
         return true;

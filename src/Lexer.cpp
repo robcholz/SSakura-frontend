@@ -7,13 +7,13 @@
 
 #include "Lexer.hpp"
 
+#include <spdlog/spdlog.h>
 
-using namespace ssa;
 
 Lexer::Lexer() {
     this->lastChar = ' ';
     this->currChar = EOF;
-    this->currTokenCategory = TokenCategory{};
+    this->token = Token{};
 }
 
 void Lexer::readFile(const std::string& filename) {
@@ -25,8 +25,8 @@ void Lexer::closeFile() {
     file.close();
 }
 
-ReservedSymbol_Underlying_t Lexer::getNextChar() {
-    ReservedSymbol_Underlying_t ch;
+ssa::ReservedSymbol_Underlying_t Lexer::getNextChar() {
+    ssa::ReservedSymbol_Underlying_t ch;
     file.get(ch);
     return ch;
 }
@@ -37,50 +37,55 @@ std::string Lexer::getToken() {
     } // ignore space
 
     if (isAlpha(lastChar)) {
-        token.identifierVal.clear();
-        // TODO, make sure a number literal format
+        pattern.clear();
+        // TODO make sure a number literal format
         while (isNum(lastChar)) {
-            token.identifierVal.push_back(lastChar);
+            pattern.push_back(lastChar);
             lastChar = getNextChar();
         }
         // TokenCategory::KEYWORD
-        if (keywordMap_s2e.contains(token.identifierVal)) {
-            currTokenCategory = TokenCategory::KEYWORD;
-            token.keyword = keywordMap_s2e.at(token.identifierVal);
-            return /*keywordMap_s2k.at*/(token.identifierVal);
+        if (ssa::contains<ssa::Keyword>(pattern)) {
+            token.category = TokenCategory::KEYWORD;
+            token.tokens = ssa::from_string<ssa::Keyword>(pattern);
+            return /*keywordMap_s2k.at*/(pattern);
         } else {
-            currTokenCategory = TokenCategory::IDENTIFIER;
+            token.category = TokenCategory::IDENTIFIER;
+            token.tokens = pattern;
             return "IDENTIFIER";
         }
     } // string
 
     // TokenCategory::LITERAL
-    if (isDigit(lastChar) || equals(lastChar, '.')) {
-        currTokenCategory = TokenCategory::LITERAL;
-        token.literalVal.clear();
-        while (isDigit(lastChar) || equals(lastChar, '.')) {
-            token.literalVal.push_back(lastChar);
+    if (isDigit(lastChar) || equals(lastChar, ssa::ReservedSymbol::DOT)) {
+        token.category = TokenCategory::LITERAL;
+        pattern.clear();
+        while (isDigit(lastChar) || equals(lastChar, ssa::ReservedSymbol::DOT)) {
+            pattern.push_back(lastChar);
             lastChar = getNextChar();
         }
+        token.tokens = pattern;
         return "NUMBER";
     }
 
     // comments
-    if (equals(lastChar, ReservedSymbol::HASHTAG)) {
+    if (equals(lastChar, ssa::ReservedSymbol::HASHTAG)) {
         do
             lastChar = getNextChar();
-        while (!equals(lastChar,EOF) && !equals(lastChar, '\n') && !equals(lastChar, '\r'));
-        if (!equals(lastChar,EOF)) {
+        while (!equals(lastChar, ssa::ReservedSymbol::RETURN) &&
+               !equals(lastChar, ssa::ReservedSymbol::EOF_FLAG) &&
+               !equals(lastChar, ssa::ReservedSymbol::CARRIAGE_RETURN));
+        if (!equals(lastChar, ssa::ReservedSymbol::EOF_FLAG)) {
             return getToken();
         }
     }
 
-    if (reservedSymbolMap_e2s.contains(lastChar)) {
-        currTokenCategory = TokenCategory::SYMBOL;
-        token.symbolVal = static_cast<ReservedSymbol>(lastChar);
+    if (ssa::contains<ssa::ReservedSymbol>(lastChar)) {
+        token.category = TokenCategory::SYMBOL;
+        pattern = lastChar;
+        token.tokens = static_cast<ssa::ReservedSymbol>(lastChar);
     }
-    if (equals(lastChar,EOF)) {
-        currTokenCategory = TokenCategory::EOF_TERMINATOR;
+    if (equals(lastChar, ssa::ReservedSymbol::EOF_FLAG)) {
+        token.category = TokenCategory::EOF_TERMINATOR;
     }
 
     currChar = lastChar;
@@ -90,27 +95,26 @@ std::string Lexer::getToken() {
     return result;
 }
 
-std::string Lexer::getNumberVal() const {
-    return token.literalVal;
+std::string Lexer::getTokenInString() const {
+    return pattern;
+}
+
+std::string Lexer::getLiteralVal() const {
+    return std::get<std::string>(token.tokens);
 }
 
 std::string Lexer::getIdentifierVal() const {
-    return token.identifierVal;
+    return std::get<std::string>(token.tokens);
+}
+
+ssa::Keyword Lexer::getKeyword() const {
+    return std::get<ssa::Keyword>(token.tokens);
+}
+
+ssa::ReservedSymbol Lexer::getSymbol() const {
+    return std::get<ssa::ReservedSymbol>(token.tokens);
 }
 
 Lexer::TokenCategory Lexer::getTokenCategory() const {
-    return currTokenCategory;
-}
-
-void Lexer::init() {
-    for (const auto& keyword: magic_enum::enum_values<Keyword>()) {
-        const auto& str = std::string(magic_enum::enum_name<Keyword>(keyword));
-        keywordMap_e2s.insert({keyword, str});
-        keywordMap_s2e.insert({str, keyword});
-    }
-    for (const auto& symbol: magic_enum::enum_values<ReservedSymbol>()) {
-        const auto& ch = static_cast<ReservedSymbol_Underlying_t>(symbol);
-        reservedSymbolMap_s2e.insert({symbol, ch});
-        reservedSymbolMap_e2s.insert({ch, symbol});
-    }
+    return token.category;
 }
