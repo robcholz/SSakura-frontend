@@ -5,3 +5,6 @@
 	path = third-party/llvm-project
 	url = https://github.com/llvm/llvm-project.git
 	branch = release/17.x
+[submodule "third-party/vcpkg"]
+	path = third-party/vcpkg
+	url = https://github.com/Microsoft/vcpkg.git

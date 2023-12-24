@@ -7,15 +7,17 @@
 #include "Info.hpp"
 
 
-Info::Info()
-    : IRBuilder(llvmContext),
-      module("My Cool JIT", llvmContext), // TODO incorrect order might cause segfault
-      functionPass(&module) {
-    //functionPass.add(llvm::createInstructionCombiningPass());
-    //functionPass.add(llvm::createReassociatePass());
-    //functionPass.add(llvm::createGVNPass());
-    //functionPass.add(llvm::createCFGSimplificationPass());
-    //functionPass.doInitialization();
+Info::Info(){
+    this->llvmContext=std::make_unique<llvm::LLVMContext>();
+    this->module=std::make_unique<llvm::Module>("My Cool JIT", *llvmContext);
+    this->IRBuilder=std::make_unique<llvm::IRBuilder<>>(*llvmContext);
+    this->functionPass=std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+
+    //functionPass->add(llvm::createInstructionCombiningPass());
+    //functionPass->add(llvm::createReassociatePass());
+    //functionPass->add(llvm::createGVNPass());
+    //functionPass->add(llvm::createCFGSimplificationPass());
+    //functionPass->doInitialization();
 }
 
 Info& Info::getInstance() {
@@ -23,22 +25,22 @@ Info& Info::getInstance() {
     return info;
 }
 
-llvm::LLVMContext& Info::getLLVMContext() {
-    return llvmContext;
+llvm::LLVMContext& Info::getLLVMContext() const{
+    return *llvmContext;
 }
 
-llvm::IRBuilder<>& Info::getIRBuilder() {
-    return IRBuilder;
+llvm::IRBuilder<>& Info::getIRBuilder() const{
+    return *IRBuilder;
 }
 
-llvm::Module& Info::getModule() {
-    return module;
+llvm::Module& Info::getModule()const {
+    return *module;
 }
 
 std::map<std::string, llvm::Value*>& Info::getNamedValues() {
     return namedValues;
 }
 
-llvm::legacy::FunctionPassManager& Info::getFunctionPass() {
-    return functionPass;
+llvm::legacy::FunctionPassManager& Info::getFunctionPass()const {
+    return *functionPass;
 }

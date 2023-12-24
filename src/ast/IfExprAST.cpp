@@ -39,7 +39,8 @@ llvm::Value* IfExprAST::codeGen() {
     else_func_block = ir_builder.GetInsertBlock();
     func->insert(func->end(), merge_func_block);
     ir_builder.SetInsertPoint(merge_func_block);
-    const auto result = ir_builder.CreatePHI(llvm::Type::getDoubleTy(context), 2, "iftmp");
+    // TODO result type fix
+    const auto result = ir_builder.CreatePHI(then_value->getType(), 2, "iftmp");
     result->addIncoming(then_value, then_func_block);
     result->addIncoming(else_value, else_func_block);
     return result;

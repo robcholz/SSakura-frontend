@@ -7,6 +7,7 @@
 #define SSAKURA_FRONTEND_INFO_HPP
 
 #include <map>
+#include <memory>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LegacyPassManager.h>
 
@@ -28,19 +29,23 @@ public:
 
     static Info& getInstance();
 
-    llvm::LLVMContext& getLLVMContext();
-    llvm::IRBuilder<>& getIRBuilder();
-    llvm::Module& getModule();
-    std::map<std::string,llvm::Value*>& getNamedValues();
-    llvm::legacy::FunctionPassManager& getFunctionPass();
+    llvm::LLVMContext& getLLVMContext() const;
+
+    llvm::IRBuilder<>& getIRBuilder() const;
+
+    llvm::Module& getModule() const;
+
+    std::map<std::string, llvm::Value*>& getNamedValues();
+
+    llvm::legacy::FunctionPassManager& getFunctionPass() const;
 
 private:
     Info();
 
-    llvm::LLVMContext llvmContext;
-    llvm::IRBuilder<> IRBuilder;
-    llvm::Module module;
-    llvm::legacy::FunctionPassManager functionPass;
+    std::unique_ptr<llvm::LLVMContext> llvmContext;
+    std::unique_ptr<llvm::IRBuilder<>> IRBuilder;
+    std::unique_ptr<llvm::Module> module;
+    std::unique_ptr<llvm::legacy::FunctionPassManager> functionPass;
     std::map<std::string, llvm::Value*> namedValues;
 };
 

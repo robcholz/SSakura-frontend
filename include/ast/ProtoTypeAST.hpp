@@ -20,9 +20,13 @@ namespace llvm {
 class PrototypeAST {
 public:
     PrototypeAST(const std::string& name,
-        std::unique_ptr<ParameterList> arguments,
-        Type returnType);
-    std::string getName();
+                 std::unique_ptr<ParameterList> arguments,
+                 Type returnType);
+
+    std::string getName() const;
+
+    const Type& getReturnType() const;
+
     llvm::Function* codeGen();
 
 private:

@@ -1,9 +1,9 @@
 PROCEDURE foo(x:I8):I32{
     IF(x=3){
-     RETURN 1989
+     RETURN 1
     }
     ELSE{
-     RETURN 64
+     RETURN 2
     }
 }
 

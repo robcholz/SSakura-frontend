@@ -13,8 +13,12 @@ PrototypeAST::PrototypeAST(const std::string& name,
     this->arguements = std::move(arguments);
 }
 
-std::string PrototypeAST::getName() {
+std::string PrototypeAST::getName() const{
     return name;
+}
+
+const Type& PrototypeAST::getReturnType() const {
+    return returnType;
 }
 
 llvm::Function* PrototypeAST::codeGen() {

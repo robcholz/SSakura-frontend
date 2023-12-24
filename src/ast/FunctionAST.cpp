@@ -24,7 +24,7 @@ llvm::Value* FunctionAST::codeGen() {
         function = prototype->codeGen();
     if (!function)
         return nullptr;
-    llvm::BasicBlock* basic_block= llvm::BasicBlock::Create(context, "entry", function);
+    llvm::BasicBlock* basic_block = llvm::BasicBlock::Create(context, "entry", function);
     ir_builder.SetInsertPoint(basic_block);
     namedValues.clear();
     for (auto& arg: function->args()) {
@@ -35,6 +35,8 @@ llvm::Value* FunctionAST::codeGen() {
         function->eraseFromParent();
         return nullptr;
     }
+    llvm::Type* legal_ret_type = prototype->getReturnType().toLLVMType();
+    ret_val=Type::tryReturnSyncTypeValue(ret_val, legal_ret_type);
     ir_builder.CreateRet(ret_val);
     verifyFunction(*function);
     Info::getInstance().getFunctionPass().run(*function);
