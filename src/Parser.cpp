@@ -167,7 +167,7 @@ std::unique_ptr<FunctionAST> Parser::parseFunctionExpr() {
 std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
     if (auto e = parseExpr()) {
         auto proto = std::make_unique<PrototypeAST>(
-            "",
+            "main",
             std::make_unique<ParameterList>(ParameterList::emptyParamList()),
             Type(ssa::Elementary::I32));
         return std::make_unique<FunctionAST>(

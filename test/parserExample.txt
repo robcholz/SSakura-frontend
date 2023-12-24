@@ -1,10 +1,10 @@
-PROCEDURE foo(x:F32,y:U8):I8{
-    IF(3<x){
-     RETURN foo(2)
+PROCEDURE foo(x:I8):I32{
+    IF(x=3){
+     RETURN 1989
     }
     ELSE{
-     RETURN foo(2)
+     RETURN 64
     }
 }
 
-foo(2)
+foo(3)

@@ -24,9 +24,9 @@ llvm::Value* BinaryExprAST::codeGen() {
         case ssa::BinaryOperator::MULTIPLE:
             return ir_builder.CreateFMul(leftAst, rightAst, "multmp");
         case ssa::BinaryOperator::DIVISON:
-            return division(leftAst,rightAst);
+            return division(leftAst, rightAst);
         case ssa::BinaryOperator::MOD:
-            return modulus(leftAst,rightAst);
+            return modulus(leftAst, rightAst);
         case ssa::BinaryOperator::LESS:
             return lessThan(leftAst, rightAst);
         case ssa::BinaryOperator::GREATER:
@@ -34,9 +34,9 @@ llvm::Value* BinaryExprAST::codeGen() {
         case ssa::BinaryOperator::EQUAL:
             return equality(leftAst, rightAst);
         case ssa::BinaryOperator::AND:
-            return boolAnd(leftAst,rightAst);
+            return boolAnd(leftAst, rightAst);
         case ssa::BinaryOperator::OR:
-            return boolOr(leftAst,rightAst);
+            return boolOr(leftAst, rightAst);
         case ssa::BinaryOperator::NOT:
             return boolNot(rightAst);
     }
@@ -81,7 +81,7 @@ llvm::Value* BinaryExprAST::equality(llvm::Value* left, llvm::Value* right) {
 llvm::Value* BinaryExprAST::greaterThan(llvm::Value* left, llvm::Value* right) {
     auto& ir_builder = Info::getInstance().getIRBuilder();
 
-    trySyncType(&left, &right);
+    tryStandardizeType(&left, &right);
 
     const auto left_type = left->getType();
     const auto right_type = right->getType();
@@ -99,7 +99,7 @@ llvm::Value* BinaryExprAST::greaterThan(llvm::Value* left, llvm::Value* right) {
 llvm::Value* BinaryExprAST::lessThan(llvm::Value* left, llvm::Value* right) {
     auto& ir_builder = Info::getInstance().getIRBuilder();
 
-    trySyncType(&left, &right);
+    tryStandardizeType(&left, &right);
 
     const auto left_type = left->getType();
     const auto right_type = right->getType();
@@ -116,12 +116,12 @@ llvm::Value* BinaryExprAST::lessThan(llvm::Value* left, llvm::Value* right) {
 
 llvm::Value* BinaryExprAST::boolAnd(llvm::Value* left, llvm::Value* right) {
     auto& ir_builder = Info::getInstance().getIRBuilder();
-    return ir_builder.CreateAnd(left,right);
+    return ir_builder.CreateAnd(left, right);
 }
 
 llvm::Value* BinaryExprAST::boolOr(llvm::Value* left, llvm::Value* right) {
     auto& ir_builder = Info::getInstance().getIRBuilder();
-    return ir_builder.CreateOr(left,right);
+    return ir_builder.CreateOr(left, right);
 }
 
 llvm::Value* BinaryExprAST::boolNot(llvm::Value* value) {
@@ -130,7 +130,7 @@ llvm::Value* BinaryExprAST::boolNot(llvm::Value* value) {
 }
 
 llvm::Value* BinaryExprAST::modulus(llvm::Value* left, llvm::Value* right) {
-    if(!left->getType()->isIntegerTy()||!right->getType()->isIntegerTy()) {
+    if (!left->getType()->isIntegerTy() || !right->getType()->isIntegerTy()) {
         spdlog::error("Cannot apply binary operator% to non-integer type(s)!");
         std::terminate();
     }
@@ -138,7 +138,7 @@ llvm::Value* BinaryExprAST::modulus(llvm::Value* left, llvm::Value* right) {
 }
 
 llvm::Value* BinaryExprAST::division(llvm::Value* left, llvm::Value* right) {
-    trySyncType(&left,&right);
+    tryStandardizeType(&left, &right);
     auto& ir_builder = Info::getInstance().getIRBuilder();
     if (left->getType()->isIntegerTy()) {
         return ir_builder.CreateSDiv(left, right);
@@ -149,7 +149,7 @@ llvm::Value* BinaryExprAST::division(llvm::Value* left, llvm::Value* right) {
     throw std::logic_error("unhandled division comparison type");
 }
 
-void BinaryExprAST::trySyncType(llvm::Value** left, llvm::Value** right) {
+void BinaryExprAST::tryStandardizeType(llvm::Value** left, llvm::Value** right) {
     auto& ir_builder = Info::getInstance().getIRBuilder();
     auto& context = Info::getInstance().getLLVMContext();
     const auto left_type = (*left)->getType();
@@ -160,5 +160,32 @@ void BinaryExprAST::trySyncType(llvm::Value** left, llvm::Value** right) {
     }
     if (right_type->isIntegerTy() && left_type->isFloatingPointTy()) {
         *right = ir_builder.CreateSIToFP(*right, llvm::Type::getDoubleTy(context));
+    }
+}
+
+void BinaryExprAST::trySyncType(llvm::Value** left, llvm::Value** right) {
+    auto& ir_builder = Info::getInstance().getIRBuilder();
+    auto& context = Info::getInstance().getLLVMContext();
+
+    tryStandardizeType(left, right);
+
+    const auto left_type = (*left)->getType();
+    const auto right_type = (*right)->getType();
+
+    if (left_type->isIntegerTy()) {
+        const auto& l_width = left_type->getIntegerBitWidth();
+        const auto& r_width = right_type->getIntegerBitWidth();
+        if (l_width > r_width)
+            *right = ir_builder.CreateZExt(*right, left_type);
+        else if (l_width < r_width)
+            *left = ir_builder.CreateZExt(*left, right_type);
+    }
+    if (left_type->isFloatingPointTy()) {
+        const auto& l_width = left_type->getPrimitiveSizeInBits();
+        const auto& r_width = right_type->getPrimitiveSizeInBits();
+        if (l_width > r_width)
+            *right = ir_builder.CreateFPExt(*right, left_type);
+        else if (l_width < r_width)
+            *left = ir_builder.CreateFPExt(*left, right_type);
     }
 }

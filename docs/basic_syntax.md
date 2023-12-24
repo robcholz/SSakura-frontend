@@ -71,7 +71,6 @@ bool_type_explicit:bool <- 0=1  # evaluates to FALSE since 0 does not equal to 1
 | 64-bit      | i64    | u64      |
 | 128-bit     | i128   | u128     |
 | size_t      | isize  | usize    |
-| os-specific | iptr_t | uptr_t   | 
 
 #### Float Types in SSakura
 

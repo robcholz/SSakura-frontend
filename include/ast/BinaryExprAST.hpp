@@ -30,7 +30,8 @@ private:
     static llvm::Value* boolNot(llvm::Value* value);
     static llvm::Value* modulus(llvm::Value* left,llvm::Value* right);
     static llvm::Value* division(llvm::Value* left,llvm::Value* right);
-    static void trySyncType(llvm::Value** left, llvm::Value** right);
+    static void tryStandardizeType(llvm::Value** left, llvm::Value** right);
+    static void trySyncType(llvm::Value** left,llvm::Value** right);
 };
 
 #endif //SSAKURA_FRONTEND_BINARYEXPRAST_HPP

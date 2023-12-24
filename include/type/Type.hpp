@@ -15,6 +15,12 @@
 
 class Type {
 public:
+    enum Sub{
+        INTEGER,
+        FLOATING,
+        STRING,
+    };
+
     explicit Type(const std::string& type);
 
     explicit Type(ssa::Elementary type);
@@ -24,6 +30,7 @@ public:
     bool isFloat() const;
     bool isInteger() const;
     bool isSigned() const;
+    bool isVoid() const;
     const Type& getType() const;
     llvm::Type* toLLVMType() const;
 

@@ -20,9 +20,9 @@ llvm::Value* IfExprAST::codeGen() {
     if (!cond_value)
         return nullptr;
     const auto func = ir_builder.GetInsertBlock()->getParent();
-    auto then_func_block = llvm::BasicBlock::Create(context, "then", func);
-    auto else_func_block = llvm::BasicBlock::Create(context, "else");
-    const auto merge_func_block = llvm::BasicBlock::Create(context, "ifcont");
+    auto then_func_block = llvm::BasicBlock::Create(context, "btrue", func);
+    auto else_func_block = llvm::BasicBlock::Create(context, "bfalse");
+    const auto merge_func_block = llvm::BasicBlock::Create(context, "end");
     ir_builder.CreateCondBr(cond_value, then_func_block, else_func_block);
     ir_builder.SetInsertPoint(then_func_block);
     const auto then_value = this->thenExpr->codeGen();

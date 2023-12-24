@@ -17,7 +17,6 @@ Type::Type(ssa::Elementary type) {
     this->bitwidth = ssa::getBitwidth(type);
 }
 
-
 ssa::Elementary Type::getWrappedType() const {
     return type;
 }
@@ -64,6 +63,10 @@ bool Type::isSigned() const {
     return false;
 }
 
+bool Type::isVoid() const {
+    return type==ssa::Elementary::VOID;
+}
+
 const Type& Type::getType() const {
     return *this;
 }
@@ -85,6 +88,10 @@ llvm::Type* Type::toLLVMType() const {
         }
         // TODO f128?
     }
+    if(isVoid()) {
+        return llvm::Type::getVoidTy(context);
+    }
+    spdlog::error("unhandled exception type");
     // TODO handle exception type
     std::terminate();
 }

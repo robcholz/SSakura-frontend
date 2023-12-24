@@ -111,6 +111,8 @@ public:
         F16,
         F32,
         F64,
+        VOID,
+        NONE,
     };
 
     /// these are not keywords
@@ -146,14 +148,14 @@ public:
             if (_elementMap_s2e.contains(key))
                 return _elementMap_s2e.at(key);
             spdlog::error("No keyword found in s2e map");
-            return {}; // TODO
         }
         if constexpr (std::is_same_v<T, Keyword>) {
             if (_keywordMap_s2e.contains(key))
                 return _keywordMap_s2e.at(key);
             spdlog::error("No keyword found in s2k map");
-            return {};
         }
+        static T t{};
+        return t;
     }
 
     template<typename T>
@@ -162,7 +164,8 @@ public:
         if (_reservedSymbolMap_s2e.contains(key))
             return _reservedSymbolMap_s2e.at(key);
         spdlog::error("No keyword found in s2r map");
-        return {};
+        static T t{};
+        return t;
     }
 
     inline static std::string to_string(Elementary elementary) {

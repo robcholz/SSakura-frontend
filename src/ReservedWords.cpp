@@ -64,21 +64,23 @@ uint64_t ssa::getMinBits(double_t number) {
     return 64;
 }
 
-uint64_t ssa::getBitwidth(ssa::Elementary type) {
-    if (type == ssa::Elementary::I8 || type == ssa::Elementary::U8)
+uint64_t ssa::getBitwidth(Elementary type) {
+    if (type == Elementary::VOID)
+        return 0;
+    if (type == Elementary::I8 || type == Elementary::U8)
         return 8;
-    if (type ==ssa:: Elementary::I16 || type == ssa::Elementary::U16
-        || type == ssa::Elementary::F16)
+    if (type == Elementary::I16 || type == Elementary::U16
+        || type == Elementary::F16)
         return 16;
-    if (type == ssa::Elementary::I32 || type == ssa::Elementary::U32
-        || type == ssa::Elementary::F32)
+    if (type == Elementary::I32 || type == Elementary::U32
+        || type == Elementary::F32)
         return 32;
-    if (type == ssa::Elementary::I64 || type == ssa::Elementary::U64
-        || type == ssa::Elementary::F64)
+    if (type == Elementary::I64 || type == Elementary::U64
+        || type == Elementary::F64)
         return 64;
-    if (type == ssa::Elementary::I128 || type == ssa::Elementary::U128)
+    if (type == Elementary::I128 || type == Elementary::U128)
         return 128;
-    if (type == ssa::Elementary::ISIZE || type == ssa::Elementary::USIZE)
+    if (type == Elementary::ISIZE || type == Elementary::USIZE)
         return Info::getInstance().getModule().getDataLayout().getPointerSizeInBits();
     throw std::logic_error("unhandled type");
 }
