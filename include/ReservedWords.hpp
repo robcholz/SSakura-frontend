@@ -19,7 +19,7 @@ public:
         // general
         // function identifier
         PROCEDURE,
-        // declaration of a identifier that can be referenced outside the module
+        // declaration of an identifier that can be referenced outside the module
         EXTERN,
         // c-style struct
         COLLECTION,
@@ -61,13 +61,13 @@ public:
         MOD,
         // typedef
 
-        // give a alias name to a type
+        // give an alias name to a type
         USE,
     };
 
     enum class ReservedSymbol:ReservedSymbol_Underlying_t {
         PLUS = '+',
-        HYPEN = '-',
+        HYPHEN = '-',
         ASTERISK = '*',
         SLASH = '/',
         EQUAL_SIGN = '=',
@@ -118,9 +118,9 @@ public:
     /// these are not keywords
     enum class BinaryOperator:int {
         ADD,
-        MINUS,
+        SUBTRACT,
         MULTIPLE,
-        DIVISON,
+        DIVISION,
         MOD,
         GREATER,
         LESS,

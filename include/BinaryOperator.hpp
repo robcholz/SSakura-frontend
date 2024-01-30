@@ -21,12 +21,12 @@ public:
                 return ssa::BinaryOperator::GREATER;
             if (symbol == ssa::ReservedSymbol::PLUS)
                 return ssa::BinaryOperator::ADD;
-            if (symbol == ssa::ReservedSymbol::HYPEN)
-                return ssa::BinaryOperator::MINUS;
+            if (symbol == ssa::ReservedSymbol::HYPHEN)
+                return ssa::BinaryOperator::SUBTRACT;
             if (symbol == ssa::ReservedSymbol::ASTERISK)
                 return ssa::BinaryOperator::MULTIPLE;
             if (symbol == ssa::ReservedSymbol::SLASH)
-                return ssa::BinaryOperator::DIVISON;
+                return ssa::BinaryOperator::DIVISION;
             if (symbol == ssa::ReservedSymbol::EQUAL_SIGN)
                 return ssa::BinaryOperator::EQUAL;
         }
@@ -56,11 +56,11 @@ public:
                 return 10;
             case ssa::BinaryOperator::ADD:
                 return 20;
-            case ssa::BinaryOperator::MINUS:
+            case ssa::BinaryOperator::SUBTRACT:
                 return 20;
             case ssa::BinaryOperator::MULTIPLE:
                 return 30;
-            case ssa::BinaryOperator::DIVISON:
+            case ssa::BinaryOperator::DIVISION:
                 return 30;
             case ssa::BinaryOperator::MOD:
                 return 30;

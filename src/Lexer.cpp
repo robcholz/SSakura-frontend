@@ -97,10 +97,6 @@ Lexer::Token Lexer::getToken() {
     return token;
 }
 
-std::string Lexer::getTokenInString() const {
-    return pattern;
-}
-
 std::string Lexer::getLiteralVal() const {
     return std::get<std::string>(token.tokens);
 }

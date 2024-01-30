@@ -3,6 +3,7 @@
 //
 #include "ast/IfExprAST.hpp"
 #include "Info.hpp"
+#include "type/Type.hpp"
 
 
 IfExprAST::IfExprAST(std::unique_ptr<ExprAST> condition, std::unique_ptr<ExprAST> thenExpr,
@@ -40,7 +41,11 @@ llvm::Value* IfExprAST::codeGen() {
     func->insert(func->end(), merge_func_block);
     ir_builder.SetInsertPoint(merge_func_block);
     // TODO result type fix
-    const auto result = ir_builder.CreatePHI(then_value->getType(), 2, "iftmp");
+    const auto result = ir_builder.CreatePHI(
+        Type::returnSyncType(then_value,else_value),
+        2,
+        "iftmp"
+        );
     result->addIncoming(then_value, then_func_block);
     result->addIncoming(else_value, else_func_block);
     return result;

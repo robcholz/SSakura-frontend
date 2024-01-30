@@ -158,11 +158,18 @@ void Type::trySyncTypeValue(llvm::Value** left, llvm::Value** right) {
     }
 }
 
+llvm::Type* Type::returnSyncType(llvm::Value* left, llvm::Value* right) {
+    // TODO toy function
+    const auto& l_type=left->getType()->getIntegerBitWidth();
+    const auto& r_type=right->getType()->getIntegerBitWidth();
+    if(l_type>r_type)
+        return left->getType();
+    else
+        return right->getType();
+}
+
 llvm::Value* Type::tryReturnSyncTypeValue(llvm::Value* left, llvm::Type* targetType) {
     auto& ir_builder = Info::getInstance().getIRBuilder();
-
-    spdlog::info(to_string(left->getType()));
-    spdlog::info(to_string(targetType));
 
     tryStandardizeValueType(&left, targetType);
 

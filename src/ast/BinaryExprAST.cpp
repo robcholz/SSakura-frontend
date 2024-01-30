@@ -16,15 +16,14 @@ BinaryExprAST::BinaryExprAST(ssa::BinaryOperator op, std::unique_ptr<ExprAST> le
 llvm::Value* BinaryExprAST::codeGen() {
     const auto leftAst = leftExprAst->codeGen();
     const auto rightAst = rightExprAst->codeGen();
-    auto& ir_builder = Info::getInstance().getIRBuilder();
     switch (this->op) {
         case ssa::BinaryOperator::ADD:
-            return ir_builder.CreateFAdd(leftAst, rightAst, "addtmp");
-        case ssa::BinaryOperator::MINUS:
-            return ir_builder.CreateFSub(leftAst, rightAst, "subtmp");
+            return add(leftAst,rightAst);
+        case ssa::BinaryOperator::SUBTRACT:
+            return subtract(leftAst,rightAst);
         case ssa::BinaryOperator::MULTIPLE:
-            return ir_builder.CreateFMul(leftAst, rightAst, "multmp");
-        case ssa::BinaryOperator::DIVISON:
+            return multiple(leftAst,rightAst);
+        case ssa::BinaryOperator::DIVISION:
             return division(leftAst, rightAst);
         case ssa::BinaryOperator::MOD:
             return modulus(leftAst, rightAst);
@@ -41,6 +40,8 @@ llvm::Value* BinaryExprAST::codeGen() {
         case ssa::BinaryOperator::NOT:
             return boolNot(rightAst);
     }
+    /// impossible
+    throw std::logic_error("impossible senario!");
 }
 
 llvm::Value* BinaryExprAST::equality(llvm::Value* value) {
@@ -136,6 +137,42 @@ llvm::Value* BinaryExprAST::modulus(llvm::Value* left, llvm::Value* right) {
         std::terminate();
     }
     return Info::getInstance().getIRBuilder().CreateSRem(left, right);
+}
+
+llvm::Value* BinaryExprAST::add(llvm::Value* left, llvm::Value* right) {
+    Type::tryStandardizeTypeValue(&left,&right);
+    auto& ir_builder = Info::getInstance().getIRBuilder();
+    if (left->getType()->isIntegerTy()) {
+        return ir_builder.CreateAdd(left, right, "addtmp");
+    }
+    if (left->getType()->isFloatingPointTy()) {
+        return ir_builder.CreateFAdd(left, right, "addtmp");
+    }
+    throw std::logic_error("unhandled add type");
+}
+
+llvm::Value* BinaryExprAST::subtract(llvm::Value* left, llvm::Value* right) {
+    Type::tryStandardizeTypeValue(&left,&right);
+    auto& ir_builder = Info::getInstance().getIRBuilder();
+    if (left->getType()->isIntegerTy()) {
+        return ir_builder.CreateSub(left, right, "subtmp");
+    }
+    if (left->getType()->isFloatingPointTy()) {
+        return ir_builder.CreateFSub(left, right, "subtmp");
+    }
+    throw std::logic_error("unhandled subtract type");
+}
+
+llvm::Value* BinaryExprAST::multiple(llvm::Value* left, llvm::Value* right) {
+    Type::tryStandardizeTypeValue(&left,&right);
+    auto& ir_builder = Info::getInstance().getIRBuilder();
+    if (left->getType()->isIntegerTy()) {
+        return ir_builder.CreateMul(left, right, "multmp");
+    }
+    if (left->getType()->isFloatingPointTy()) {
+        return ir_builder.CreateFMul(left, right, "multmp");
+    }
+    throw std::logic_error("unhandled multiple type");
 }
 
 llvm::Value* BinaryExprAST::division(llvm::Value* left, llvm::Value* right) {

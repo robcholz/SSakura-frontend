@@ -39,22 +39,26 @@ public:
             return std::get<ssa::Keyword>(tokens);
         }
 
-        const std::string& getLiteral() const {
+        const std::string &getLiteral() const {
             return std::get<std::string>(tokens);
         }
 
-        const std::string& getIdentifier() const {
+        const std::string &getIdentifier() const {
             return std::get<std::string>(tokens);
         }
 
         bool isSymbol() const { return category == TokenCategory::SYMBOL; }
+
         bool isKeyword() const { return category == TokenCategory::KEYWORD; }
+
         bool isLiteral() const { return category == TokenCategory::LITERAL; }
+
         bool isIdentifier() const { return category == TokenCategory::IDENTIFIER; }
-        bool isEOF() const {return category==TokenCategory::EOF_TERMINATOR;}
+
+        bool isEOF() const { return category == TokenCategory::EOF_TERMINATOR; }
 
         template<typename T>
-        bool is() const{
+        bool is() const {
             static_assert(std::is_same_v<T, ssa::Keyword> || std::is_same_v<T, ssa::ReservedSymbol>);
             if constexpr (std::is_same_v<T, ssa::Keyword>)
                 return isKeyword();
@@ -64,7 +68,7 @@ public:
         }
 
         template<typename T>
-        const T& get()const {
+        const T &get() const {
             static_assert(std::is_same_v<T, ssa::Keyword> || std::is_same_v<T, ssa::ReservedSymbol>);
             return std::get<T>(tokens);
         }
@@ -82,14 +86,11 @@ public:
 
     ~Lexer() = default;
 
-    void readFile(const std::string& filename);
+    void readFile(const std::string &filename);
 
     void closeFile();
 
     Token getToken();
-
-    /// valid only if getTokenCategory() not returns TokenCategory::EOF_TERMINATOR
-    std::string getTokenInString() const;
 
     std::string getLiteralVal() const;
 
@@ -112,10 +113,10 @@ private:
 
     ssa::ReservedSymbol_Underlying_t getNextChar();
 
-    inline static bool allOf(const std::string_view& str, bool (*condition_function)(char)) {
+    inline static bool allOf(const std::string_view &str, bool (* condition_function)(char)) {
         if (str.length() == 1)
             return condition_function(str[0]);
-        for (const auto& ch: str) {
+        for (const auto &ch: str) {
             if (!condition_function(ch))
                 return false;
         }

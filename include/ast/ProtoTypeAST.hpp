@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "rule/ParameterList.hpp"
-#include "../type/Type.hpp"
+#include "type/Type.hpp"
 
 
 namespace llvm {

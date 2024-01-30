@@ -181,9 +181,7 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
 std::unique_ptr<ExprAST> Parser::parseIfExpr() {
     Checker::getNextVerifyThisToken(this, ssa::Keyword::IF); // eat if
     auto condition = parseParenthesisExpr();
-    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::LBRACE);
-    std::unique_ptr<ExprAST> then_expr = parseExpr(); // TODO ERROR OCCURED HERE
-    Checker::getNextVerifyThisToken(this, ssa::ReservedSymbol::RBRACE);
+    std::unique_ptr<ExprAST> then_expr = parseBraceExpr();
     if (Checker::verifyCurrentToken(this, ssa::Keyword::ELSE,true)) {
         Checker::getNextVerifyThisToken(this,ssa::Keyword::ELSE);
         auto else_expr = parseBraceExpr();

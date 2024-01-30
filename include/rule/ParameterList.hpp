@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "../type/VariableDefinition.hpp"
+#include "type/VariableDefinition.hpp"
 
 
 class ParameterList {

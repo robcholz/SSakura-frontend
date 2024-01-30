@@ -29,6 +29,9 @@ private:
     static llvm::Value* boolOr(llvm::Value* left,llvm::Value* right);
     static llvm::Value* boolNot(llvm::Value* value);
     static llvm::Value* modulus(llvm::Value* left,llvm::Value* right);
+    static llvm::Value* add(llvm::Value* left,llvm::Value* right);
+    static llvm::Value* subtract(llvm::Value* left,llvm::Value* right);
+    static llvm::Value* multiple(llvm::Value* left,llvm::Value* right);
     static llvm::Value* division(llvm::Value* left,llvm::Value* right);
 };
 

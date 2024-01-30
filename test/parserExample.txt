@@ -1,9 +1,8 @@
 PROCEDURE foo(x:I8):I32{
-    IF(x=3){
-     RETURN 1
-    }
-    ELSE{
-     RETURN 2
+    IF(x>5){
+        RETURN 0
+    }ELSE{
+        RETURN 3
     }
 }
 
