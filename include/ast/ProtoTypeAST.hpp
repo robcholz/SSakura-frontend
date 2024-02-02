@@ -8,31 +8,30 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "rule/ParameterList.hpp"
 #include "type/Type.hpp"
+#include "value/Function.hpp"
 
-
-namespace llvm {
-    class Function;
-}
-
+namespace ssa {
 class PrototypeAST {
-public:
-    PrototypeAST(const std::string& name,
-                 std::unique_ptr<ParameterList> arguments,
-                 Type returnType);
+ public:
+  PrototypeAST(const std::string& name,
+               std::unique_ptr<ParameterList> arguments,
+               std::unique_ptr<Type> returnType);
 
-    std::string getName() const;
+  std::string getName() const;
 
-    const Type& getReturnType() const;
+  const Type& getReturnType() const;
 
-    llvm::Function* codeGen();
+  Function codeGen();
 
-private:
-    std::string name;
-    std::unique_ptr<ParameterList> arguements;
-    Type returnType;
+ private:
+  std::string name;
+  std::unique_ptr<ParameterList> arguements;
+  std::unique_ptr<Type> returnType;
 };
+}  // namespace ssa
 
-#endif //SSAKURA_PROTOTYPEAST_HPP
+#endif  // SSAKURA_PROTOTYPEAST_HPP

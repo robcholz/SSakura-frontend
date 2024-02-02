@@ -11,15 +11,18 @@
 #include <vector>
 #include "ExprAST.hpp"
 
+namespace ssa {
 
 class CallableExprAST : public ExprAST {
-public:
-    explicit CallableExprAST(const std::string& callable,std::vector<std::unique_ptr<ExprAST>> arguments);
-    llvm::Value* codeGen() final;
-private:
-    std::string callable;
-    std::vector<std::unique_ptr<ExprAST>> arguments;
+ public:
+  explicit CallableExprAST(const std::string& callable,
+                           std::vector<std::unique_ptr<ExprAST>> arguments);
+  Value codeGen() final;
+
+ private:
+  std::string callable;
+  std::vector<std::unique_ptr<ExprAST>> arguments;
 };
+}  // namespace ssa
 
-
-#endif //SSAKURA_FRONTEND_CALLABLEEXPRAST_HPP
+#endif  // SSAKURA_FRONTEND_CALLABLEEXPRAST_HPP

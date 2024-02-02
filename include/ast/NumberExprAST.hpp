@@ -6,22 +6,26 @@
 #ifndef SSAKURA_NUMBEREXPRAST_HPP
 #define SSAKURA_NUMBEREXPRAST_HPP
 
+#include <memory>
 #include "ExprAST.hpp"
-#include "type/VariableConstant.hpp"
+#include "rule/VariableConstant.hpp"
 
-
-namespace llvm {
-    class Value;
-}
-
+namespace ssa {
 class NumberExprAST : public ExprAST {
-public:
-    explicit NumberExprAST(const std::string& number);
+ public:
+  /// the constructor will choose the smallest signed type to hold the value
+  explicit NumberExprAST(s_i64_t i64);
+  /// the constructor will choose the smallest unsigned type to hold the value
+  explicit NumberExprAST(s_u64_t u64);
+  // the constructor will choose the smallest floating type to hold the value
+  explicit NumberExprAST(s_f64_t f64);
 
-    llvm::Value* codeGen() final;
 
-private:
-    VariableConstant constant;
+  Value codeGen() final;
+
+ private:
+  std::unique_ptr<VariableConstant> constant;
 };
+}  // namespace ssa
 
-#endif //SSAKURA_NUMBEREXPRAST_HPP
+#endif  // SSAKURA_NUMBEREXPRAST_HPP

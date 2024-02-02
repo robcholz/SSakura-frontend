@@ -6,16 +6,15 @@
 #ifndef SSAKURA_FRONTEND_EXPRAST_HPP
 #define SSAKURA_FRONTEND_EXPRAST_HPP
 
+#include "value/Value.hpp"
 
-namespace llvm {
-    class Value;
-}
-
+namespace ssa {
 class ExprAST {
-public:
-    virtual ~ExprAST() = default;
+ public:
+  virtual ~ExprAST() = default;
 
-    virtual llvm::Value* codeGen() =0;
+  virtual Value codeGen() = 0;
 };
+}  // namespace ssa
 
-#endif //SSAKURA_FRONTEND_EXPRAST_HPP
+#endif  // SSAKURA_FRONTEND_EXPRAST_HPP

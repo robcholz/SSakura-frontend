@@ -6,45 +6,42 @@
 #ifndef SSAKURA_FRONTEND_TYPE_HPP
 #define SSAKURA_FRONTEND_TYPE_HPP
 
+#include <optional>
 #include <string>
+#include <string_view>
+#include <variant>
 
-#include <llvm/IR/Type.h>
-#include <llvm/IR/Value.h>
+#include "lang/Primitive.hpp"
 
-#include "ReservedWords.hpp"
-
-
+namespace ssa {
 class Type {
-public:
-    enum Sub{
-        INTEGER,
-        FLOATING,
-        STRING,
-    };
+ public:
+  explicit Type(Primitive type);
 
-    explicit Type(const std::string& type);
+  Type& operator=(Primitive type);
 
-    explicit Type(ssa::Elementary type);
+  uint64_t getBitWidth() const;
+  bool isFloat() const;
+  bool isInteger() const;
+  bool isSigned() const;
+  bool isSignedInteger() const;
+  bool isUnsignedInteger() const;
+  bool isVoid() const;
+  bool isPrimitive() const;
+  bool canBeImplicitlyCastedTo(const Type& type);
 
-    ssa::Elementary getWrappedType() const;
-    uint64_t getBitWidth() const;
-    bool isFloat() const;
-    bool isInteger() const;
-    bool isSigned() const;
-    bool isVoid() const;
-    const Type& getType() const;
-    llvm::Type* toLLVMType() const;
+  std::optional<Primitive> getPrimitive() const;
+  std::string toString() const;
 
-    static void tryStandardizeTypeValue(llvm::Value** left, llvm::Value** right);
-    static void tryStandardizeValueType(llvm::Value** left, const llvm::Type* targetType);
-    static void trySyncTypeValue(llvm::Value** left,llvm::Value** right);
-    static llvm::Type* returnSyncType(llvm::Value* left,llvm::Value* right);
-    static llvm::Value* tryReturnSyncTypeValue(llvm::Value* left, llvm::Type* targetType);
-    static std::string to_string(const llvm::Type* type);
+  bool tryImplicitlyCastTo(const Type& type);
 
-private:
-    uint64_t bitwidth;
-    ssa::Elementary type;
+ private:
+  uint64_t bitwidth;
+  bool primitive;
+  std::variant<Primitive, std::string> variantType;
+
+  void initializeFrom(Primitive type);
 };
+}  // namespace ssa
 
-#endif //SSAKURA_FRONTEND_TYPE_HPP
+#endif  // SSAKURA_FRONTEND_TYPE_HPP

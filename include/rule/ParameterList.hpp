@@ -8,23 +8,22 @@
 
 #include <memory>
 #include <vector>
+#include "VariableDefinition.hpp"
 
-#include "type/VariableDefinition.hpp"
-
-
+namespace ssa {
 class ParameterList {
-public:
-    void add(std::unique_ptr<VariableDefinition> type);
-    size_t size() const;
+ public:
+  void add(std::unique_ptr<VariableDefinition> type);
+  size_t size() const;
 
-    // return a copy of parameters
-    std::vector<VariableDefinition> getParameters() const ;
+  // return a copy of parameters
+  std::vector<VariableDefinition> getParameters() const;
 
-    static ParameterList emptyParamList() {
-        return ParameterList{};
-    }
-private:
-    std::vector<std::unique_ptr<VariableDefinition>> parameters{};
+  static ParameterList emptyParamList() { return ParameterList{}; }
+
+ private:
+  std::vector<std::unique_ptr<VariableDefinition>> parameters{};
 };
+}  // namespace ssa
 
-#endif //SSAKURA_FRONTEND_PARAMETERLIST_HPP
+#endif  // SSAKURA_FRONTEND_PARAMETERLIST_HPP

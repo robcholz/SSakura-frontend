@@ -1,19 +1,23 @@
 //
 // Created by robcholz on 11/25/23.
 //
-#include <complex>
-
-#include <llvm/IR/Constants.h>
-
 #include "ast/NumberExprAST.hpp"
-#include "Info.hpp"
-#include "tools/Utilities.hpp"
 
+using namespace ssa;
 
-NumberExprAST::NumberExprAST(const std::string &number)
-    :constant(number){
+NumberExprAST::NumberExprAST(ssa::s_i64_t i64) {
+  Primitive type= getMinBits(i64);
+  this->constant=std::make_unique<VariableConstant>(Type{type},Value{i64});
 }
 
-llvm::Value* NumberExprAST::codeGen() {
-    return constant.toLLVMConstant();
+NumberExprAST::NumberExprAST(ssa::s_u64_t u64) {
+  Primitive type= getMinBits(u64);
+  this->constant=std::make_unique<VariableConstant>(Type{type},Value{u64});
 }
+
+NumberExprAST::NumberExprAST(ssa::s_f64_t f64) {
+  Primitive type = getMinBits(f64);
+  this->constant = std::make_unique<VariableConstant>(Type{type}, Value{f64});
+}
+
+Value NumberExprAST::codeGen() {}

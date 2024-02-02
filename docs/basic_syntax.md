@@ -2,7 +2,7 @@
 
 ### Use
 
-`<attributes>  variable_name:<type>`
+`<attributes>  variable_name:<variantType>`
 
 ### Variable Attributes
 
@@ -41,8 +41,8 @@ integer_scientific_notation1 <- 19896e4  # an integer
 integer_scientific_notation2 <- 1.9896e4  # also an integer
 ```
 
-If an integer type variable is not indicated in definition, SSakura will use _int_ .
-The variable will be deduced to an integer type only if a scientific notation is deduced to an integer.
+If an integer variantType variable is not indicated in definition, SSakura will use _int_ .
+The variable will be deduced to an integer variantType only if a scientific notation is deduced to an integer.
 
 ### Float
 
@@ -96,7 +96,7 @@ Example:
 - `use my_custom_type <- int`
 - `use haha_ssakura <- f64`
 
-Type aliases create a new name for a type.
+Type aliases create a new name for a variantType.
 
 Type aliases can name primitives, collections, and any other types.
 
@@ -209,7 +209,7 @@ scope example_outer_scope{
 Example
 
 ```
-PROCEDURE <attributes> function_name(param1:<type>,param2,param3):<type>{
+PROCEDURE <attributes> function_name(param1:<variantType>,param2,param3):<variantType>{
     #  Do your things here.
     RETURN ()
 }
@@ -217,7 +217,7 @@ PROCEDURE <attributes> function_name(param1:<type>,param2,param3):<type>{
 
 A function has to have a `RETURN` keyword no matter the function returns a value or not.
 
-You can optionally add a type annotation to the end of the parameter list to represent the return type of the function.
+You can optionally add a variantType annotation to the end of the parameter list to represent the return variantType of the function.
 
 ### Attributes
 
@@ -227,7 +227,7 @@ You can optionally add a type annotation to the end of the parameter list to rep
 
 ```
 string_from_io <- INPUT()  # get a string from io input
-DISPLAY(string_from_io)  # println an arbitrary built-in type to io
+DISPLAY(string_from_io)  # println an arbitrary built-in variantType to io
 ```
 
 ## Modules
@@ -243,7 +243,7 @@ Inside a module, use `IMPORT` to import files linked to each others.
 Functions inside a module can only be accessed from other modules by the _SSakura_ source file
 with `_root` suffix.
 
-Example file `MyModule_root.ssa`
+Example file `MyModule_root.ssa_temp`
 
 ```
 IMPORT xxx.xxx.FooDefinition

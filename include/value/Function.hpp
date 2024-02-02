@@ -1,0 +1,11 @@
+//
+// Created by robcholz on 1/30/24.
+//
+#pragma once
+
+#ifndef SSAKURA_FRONTEND_INCLUDE_VALUE_FUNCTION_HPP
+#define SSAKURA_FRONTEND_INCLUDE_VALUE_FUNCTION_HPP
+
+class Function {};
+
+#endif // SSAKURA_FRONTEND_INCLUDE_VALUE_FUNCTION_HPP

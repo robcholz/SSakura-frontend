@@ -8,9 +8,6 @@
 
 #include <map>
 #include <memory>
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/LegacyPassManager.h>
-
 
 namespace llvm {
     class Value;
@@ -28,7 +25,7 @@ public:
     Info& operator=(Info&& other) noexcept = delete;
 
     static Info& getInstance();
-
+/*
     llvm::LLVMContext& getLLVMContext() const;
 
     llvm::IRBuilder<>& getIRBuilder() const;
@@ -38,15 +35,10 @@ public:
     std::map<std::string, llvm::Value*>& getNamedValues();
 
     llvm::legacy::FunctionPassManager& getFunctionPass() const;
+    */
 
 private:
     Info();
-
-    std::unique_ptr<llvm::LLVMContext> llvmContext;
-    std::unique_ptr<llvm::IRBuilder<>> IRBuilder;
-    std::unique_ptr<llvm::Module> module;
-    std::unique_ptr<llvm::legacy::FunctionPassManager> functionPass;
-    std::map<std::string, llvm::Value*> namedValues;
 };
 
 #endif //SSAKURA_FRONTEND_INFO_HPP

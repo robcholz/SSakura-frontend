@@ -2,12 +2,11 @@
 // Created by robcholz on 11/25/23.
 //
 #include "ast/VariableExprAST.hpp"
-#include "Info.hpp"
 
+using namespace ssa;
 
-VariableExprAST::VariableExprAST(const std::string& name): name(name) {
-}
+VariableExprAST::VariableExprAST(const std::string& name) : name(name) {}
 
-llvm::Value* VariableExprAST::codeGen() {
-    return Info::getInstance().getNamedValues().at(name);
+Value VariableExprAST::codeGen() {
+
 }

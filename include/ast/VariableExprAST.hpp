@@ -9,14 +9,15 @@
 #include <string>
 #include "ExprAST.hpp"
 
+namespace ssa {
+class VariableExprAST : public ExprAST {
+ public:
+  explicit VariableExprAST(const std::string& name);
+  Value codeGen() final;
 
-class VariableExprAST:public ExprAST {
-public:
-    explicit VariableExprAST(const std::string& name);
-    llvm::Value* codeGen() final;
-
-private:
-    std::string name;
+ private:
+  std::string name;
 };
+}  // namespace ssa
 
-#endif //SSAKURA_FRONTEND_VARIABLEEXPRAST_HPP
+#endif  // SSAKURA_FRONTEND_VARIABLEEXPRAST_HPP

@@ -7,7 +7,7 @@
 
 
 TEST_CASE("Lexer Test Assertion") {
-    Lexer lexer;
+    ssa::Lexer lexer;
     lexer.readFile("/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/test/function.ssa");
 
     SECTION("Parse Token") {

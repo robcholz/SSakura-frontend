@@ -6,142 +6,70 @@
 #ifndef SSAKURA_FRONTEND_LEXER_HPP
 #define SSAKURA_FRONTEND_LEXER_HPP
 
+#include <fstream>
 #include <string>
 #include <string_view>
 #include <variant>
-#include <fstream>
 
-#include "ReservedWords.hpp"
+#include "Token.hpp"
 
-
+namespace ssa {
 class Lexer {
-public:
-    enum class TokenCategory {
-        IDENTIFIER,
-        // variables, functions,...
-        KEYWORD,
-        // reserved words & keyword
-        LITERAL,
-        // "1989" 'hi' 121331LU 198964
-        SYMBOL,
-        // :./#
-        EOF_TERMINATOR,
-        // indicate the termination of the file
-    };
+ public:
+  Lexer();
 
-    class Token {
-    public:
-        ssa::ReservedSymbol getSymbol() const {
-            return std::get<ssa::ReservedSymbol>(tokens);
-        }
+  ~Lexer() = default;
 
-        ssa::Keyword getKeyword() const {
-            return std::get<ssa::Keyword>(tokens);
-        }
+  void readFile(const std::string& filename);
 
-        const std::string &getLiteral() const {
-            return std::get<std::string>(tokens);
-        }
+  void closeFile();
 
-        const std::string &getIdentifier() const {
-            return std::get<std::string>(tokens);
-        }
+  Token getToken();
 
-        bool isSymbol() const { return category == TokenCategory::SYMBOL; }
+  std::string getLiteralVal() const;
 
-        bool isKeyword() const { return category == TokenCategory::KEYWORD; }
+  std::string getIdentifierVal() const;
 
-        bool isLiteral() const { return category == TokenCategory::LITERAL; }
+  Keyword getKeyword() const;
 
-        bool isIdentifier() const { return category == TokenCategory::IDENTIFIER; }
+  Symbol getSymbol() const;
 
-        bool isEOF() const { return category == TokenCategory::EOF_TERMINATOR; }
+  TokenCategory getTokenCategory() const;
 
-        template<typename T>
-        bool is() const {
-            static_assert(std::is_same_v<T, ssa::Keyword> || std::is_same_v<T, ssa::ReservedSymbol>);
-            if constexpr (std::is_same_v<T, ssa::Keyword>)
-                return isKeyword();
-            if constexpr (std::is_same_v<T, ssa::ReservedSymbol>)
-                return isSymbol();
-            return false;
-        }
+ private:
+  std::ifstream file;
 
-        template<typename T>
-        const T &get() const {
-            static_assert(std::is_same_v<T, ssa::Keyword> || std::is_same_v<T, ssa::ReservedSymbol>);
-            return std::get<T>(tokens);
-        }
+  s_char_t lastChar;
+  s_char_t currChar;
+  std::string pattern;
 
-    private:
-        friend Lexer;
-        /// symbol
-        /// keyword
-        /// literal | identifier
-        std::variant<ssa::ReservedSymbol, ssa::Keyword, std::string> tokens;
-        TokenCategory category;
-    };
+  Token token;
 
-    Lexer();
+  s_char_t getNextChar();
 
-    ~Lexer() = default;
-
-    void readFile(const std::string &filename);
-
-    void closeFile();
-
-    Token getToken();
-
-    std::string getLiteralVal() const;
-
-    std::string getIdentifierVal() const;
-
-    ssa::Keyword getKeyword() const;
-
-    ssa::ReservedSymbol getSymbol() const;
-
-    TokenCategory getTokenCategory() const;
-
-private:
-    std::ifstream file;
-
-    ssa::ReservedSymbol_Underlying_t lastChar;
-    ssa::ReservedSymbol_Underlying_t currChar;
-    std::string pattern;
-
-    Token token;
-
-    ssa::ReservedSymbol_Underlying_t getNextChar();
-
-    inline static bool allOf(const std::string_view &str, bool (* condition_function)(char)) {
-        if (str.length() == 1)
-            return condition_function(str[0]);
-        for (const auto &ch: str) {
-            if (!condition_function(ch))
-                return false;
-        }
-        return true;
+  inline static bool allOf(const std::string_view& str,
+                           bool (*condition_function)(char)) {
+    if (str.length() == 1)
+      return condition_function(str[0]);
+    for (const auto& ch : str) {
+      if (!condition_function(ch))
+        return false;
     }
+    return true;
+  }
 
-    inline static bool equals(ssa::ReservedSymbol_Underlying_t str, ssa::ReservedSymbol symbol) {
-        return str == static_cast<ssa::ReservedSymbol_Underlying_t>(symbol);
-    }
+  inline static bool equals(s_char_t str, Symbol symbol) {
+    return str == static_cast<decltype(str)>(symbol);
+  }
 
-    inline static bool isSpace(ssa::ReservedSymbol_Underlying_t str) {
-        return isspace(str);
-    }
+  inline static bool isSpace(s_char_t str) { return isspace(str); }
 
-    inline static bool isAlpha(ssa::ReservedSymbol_Underlying_t str) {
-        return isalpha(str);
-    }
+  inline static bool isAlpha(s_char_t str) { return isalpha(str); }
 
-    inline static bool isNum(ssa::ReservedSymbol_Underlying_t str) {
-        return isalnum(str);
-    }
+  inline static bool isNum(s_char_t str) { return isalnum(str); }
 
-    inline static bool isDigit(ssa::ReservedSymbol_Underlying_t str) {
-        return isdigit(str);
-    }
+  inline static bool isDigit(s_char_t str) { return isdigit(str); }
 };
+}
 
-#endif //SSAKURA_FRONTEND_LEXER_HPP
+#endif  // SSAKURA_FRONTEND_LEXER_HPP

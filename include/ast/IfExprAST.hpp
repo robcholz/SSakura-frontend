@@ -9,17 +9,20 @@
 #include <memory>
 #include "ExprAST.hpp"
 
-
+namespace ssa {
 class IfExprAST : public ExprAST {
-public:
-    IfExprAST(std::unique_ptr<ExprAST> condition, std::unique_ptr<ExprAST> thenExpr, std::unique_ptr<ExprAST> elseExpr);
+ public:
+  IfExprAST(std::unique_ptr<ExprAST> condition,
+            std::unique_ptr<ExprAST> thenExpr,
+            std::unique_ptr<ExprAST> elseExpr);
 
-    llvm::Value* codeGen() final;
+  Value codeGen() final;
 
-private:
-    std::unique_ptr<ExprAST> condition;
-    std::unique_ptr<ExprAST> thenExpr;
-    std::unique_ptr<ExprAST> elseExpr;
+ private:
+  std::unique_ptr<ExprAST> condition;
+  std::unique_ptr<ExprAST> thenExpr;
+  std::unique_ptr<ExprAST> elseExpr;
 };
+}  // namespace ssa
 
-#endif //SSAKURA_FRONTEND_IFEXPRAST_HPP
+#endif  // SSAKURA_FRONTEND_IFEXPRAST_HPP
