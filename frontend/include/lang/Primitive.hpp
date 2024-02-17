@@ -147,6 +147,8 @@ static Primitive typeToPrimitiveTypeEnum() {
     return Primitive::I32;
   if constexpr (std::is_same_v<TYPE, primitiveTypeEnumToType<Primitive::I64>>)
     return Primitive::I64;
+  // impossible situation, just to silent the compiler!
+  return Primitive::I64;
 }
 
 template <typename TYPE>

@@ -11,7 +11,7 @@
 namespace ssa {
 class BlockExprAST : public ExprAST {
  public:
-  Value codeGen()final;
+  Value codeGen() final;
 };
 }  // namespace ssa
 

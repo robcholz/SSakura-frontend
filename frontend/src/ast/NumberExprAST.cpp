@@ -2,6 +2,7 @@
 // Created by robcholz on 11/25/23.
 //
 #include "ast/NumberExprAST.hpp"
+#include "adapter/ASTAdapter.hpp"
 
 using namespace ssa;
 
@@ -26,4 +27,6 @@ NumberExprAST::NumberExprAST(
       std::make_unique<VariableConstant>(Type{type}, Value{number});
 }
 
-Value NumberExprAST::codeGen() {}
+Value NumberExprAST::codeGen() {
+  return ASTAdapter::numberExprGen(constant);
+}

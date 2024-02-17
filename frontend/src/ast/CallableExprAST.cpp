@@ -3,6 +3,7 @@
 //
 #include "ast/CallableExprAST.hpp"
 #include "Info.hpp"
+#include "adapter/ASTAdapter.hpp"
 
 using namespace ssa;
 
@@ -14,5 +15,5 @@ CallableExprAST::CallableExprAST(
 }
 
 Value CallableExprAST::codeGen() {
-
+  return ASTAdapter::callableExprGen(callable, arguments);
 }

@@ -9,5 +9,15 @@ add_requires("conan::spdlog/[>=1.4.1]", { alias = "logging" })
 add_requires("conan::magic_enum/0.9.5", { alias = "magic_enum" })
 --add_requires("vcpkg::llvm 17.0.2",{alias="llvm"})
 
+if is_mode("debug") then
+    set_optimize("none")
+elseif is_mode("release") then
+    set_optimize("fastest")
+end
+
+-- treat all warnings as errors
+set_warnings("all")
+set_warnings("error")
+
 includes("frontend/xmake.lua")
-includes("backend/anemos/xmake.lua")
+--includes("backend/anemos/xmake.lua")

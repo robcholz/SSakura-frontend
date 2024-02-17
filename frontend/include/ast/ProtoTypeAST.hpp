@@ -29,7 +29,7 @@ class PrototypeAST {
 
  private:
   std::string name;
-  std::unique_ptr<ParameterList> arguements;
+  std::unique_ptr<ParameterList> arguments;
   std::unique_ptr<Type> returnType;
 };
 }  // namespace ssa

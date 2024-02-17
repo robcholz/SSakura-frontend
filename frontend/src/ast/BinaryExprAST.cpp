@@ -3,6 +3,7 @@
 //
 #include "ast/BinaryExprAST.hpp"
 #include "Info.hpp"
+#include "adapter/ArithmeticOperationAdapter.hpp"
 #include "type/Type.hpp"
 
 using namespace ssa;
@@ -44,26 +45,46 @@ Value BinaryExprAST::codeGen() {
   }
 }
 
-Value BinaryExprAST::equality(const Value& value) {}
+Value BinaryExprAST::equality(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::equalityGen(left, right);
+}
 
-Value BinaryExprAST::equality(const Value& left, const Value& right) {}
+Value BinaryExprAST::greaterThan(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::greaterThanGen(left, right);
+}
 
-Value BinaryExprAST::greaterThan(const Value& left, const Value& right) {}
+Value BinaryExprAST::lessThan(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::lessThanGen(left, right);
+}
 
-Value BinaryExprAST::lessThan(const Value& left, const Value& right) {}
+Value BinaryExprAST::boolAnd(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::boolAndGen(left, right);
+}
 
-Value BinaryExprAST::boolAnd(const Value& left, const Value& right) {}
+Value BinaryExprAST::boolOr(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::boolOrGen(left, right);
+}
 
-Value BinaryExprAST::boolOr(const Value& left, const Value& right) {}
+Value BinaryExprAST::boolNot(const Value& value) {
+  return ArithmeticOperationAdapter::boolNotGen(value);
+}
 
-Value BinaryExprAST::boolNot(const Value& value) {}
+Value BinaryExprAST::modulus(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::modulusGen(left, right);
+}
 
-Value BinaryExprAST::modulus(const Value& left, const Value& right) {}
+Value BinaryExprAST::add(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::addGen(left, right);
+}
 
-Value BinaryExprAST::add(const Value& left, const Value& right) {}
+Value BinaryExprAST::subtract(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::subtractGen(left, right);
+}
 
-Value BinaryExprAST::subtract(const Value& left, const Value& right) {}
+Value BinaryExprAST::multiple(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::multipleGen(left, right);
+}
 
-Value BinaryExprAST::multiple(const Value& left, const Value& right) {}
-
-Value BinaryExprAST::division(const Value& left, const Value& right) {}
+Value BinaryExprAST::division(const Value& left, const Value& right) {
+  return ArithmeticOperationAdapter::divisionGen(left, right);
+}

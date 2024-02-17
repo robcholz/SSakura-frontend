@@ -11,6 +11,7 @@ class Lang {
  public:
   Lang() = delete;
   ~Lang() = delete;
+  Lang& operator=(Lang&) = delete;
 
   static void init();
 };

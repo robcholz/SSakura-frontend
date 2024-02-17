@@ -3,6 +3,7 @@
 //
 #include "ast/FunctionAST.hpp"
 #include "Info.hpp"
+#include "adapter/ASTAdapter.hpp"
 #include "ast/ExprAST.hpp"
 #include "ast/ProtoTypeAST.hpp"
 
@@ -15,5 +16,5 @@ FunctionAST::FunctionAST(std::unique_ptr<PrototypeAST> prototype,
 }
 
 Value FunctionAST::codeGen() {
-
+  return ASTAdapter::functionExprGen(prototype, body);
 }

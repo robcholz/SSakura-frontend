@@ -3,6 +3,7 @@
 //
 #include "ast/ProtoTypeAST.hpp"
 #include "Info.hpp"
+#include "adapter/ASTAdapter.hpp"
 
 using namespace ssa;
 
@@ -11,7 +12,7 @@ PrototypeAST::PrototypeAST(const std::string& name,
                            std::unique_ptr<Type> returnType)
     : returnType(std::move(returnType)) {
   this->name = name;
-  this->arguements = std::move(arguments);
+  this->arguments = std::move(arguments);
 }
 
 std::string PrototypeAST::getName() const {
@@ -22,4 +23,6 @@ const Type& PrototypeAST::getReturnType() const {
   return *returnType;
 }
 
-Function PrototypeAST::codeGen() {}
+Function PrototypeAST::codeGen() {
+  return ASTAdapter::prototypeExprGen(name, arguments, returnType);
+}

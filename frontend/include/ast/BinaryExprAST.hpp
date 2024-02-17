@@ -23,8 +23,7 @@ class BinaryExprAST : public ExprAST {
   std::unique_ptr<ExprAST> leftExprAst;
   std::unique_ptr<ExprAST> rightExprAst;
 
-  /// \param value the boolean value (1bit integer)
-  static Value equality(const Value& value);
+
   static Value equality(const Value& left, const Value& right);
   static Value greaterThan(const Value& left, const Value& right);
   static Value lessThan(const Value& left, const Value& right);

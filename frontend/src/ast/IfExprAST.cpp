@@ -4,6 +4,7 @@
 #include "ast/IfExprAST.hpp"
 #include "Info.hpp"
 #include "type/Type.hpp"
+#include "adapter/ASTAdapter.hpp"
 
 using namespace ssa;
 
@@ -16,5 +17,5 @@ IfExprAST::IfExprAST(std::unique_ptr<ExprAST> condition,
 }
 
 Value IfExprAST::codeGen() {
-
+  return ASTAdapter::ifExprGen(condition,thenExpr,elseExpr);
 }

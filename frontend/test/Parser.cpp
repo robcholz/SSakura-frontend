@@ -14,8 +14,8 @@ int main() {
   ssa::Lang::init();
   ssa::Lexer lexer;
   lexer.readFile(
-	  "/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/frontend/test/"
-      "parserExample.txt");
+      "/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/"
+      "frontend/test/parserExample.txt");
   auto parser = std::make_unique<ssa::Parser>(&lexer);
   parser->getNextToken();
   bool flag = true;

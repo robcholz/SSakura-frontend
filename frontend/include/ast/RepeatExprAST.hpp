@@ -14,7 +14,7 @@ class RepeatExprAST : public ExprAST {
  public:
   enum class Type { REPEAT_UNTIL, REPEAT_TIMES };
 
-  RepeatExprAST(const Type repeatType,
+  RepeatExprAST(Type repeatType,
                 std::unique_ptr<ExprAST> conditionExpr,
                 std::unique_ptr<ExprAST> bodyExpr);
   Value codeGen() final;
