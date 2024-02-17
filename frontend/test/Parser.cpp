@@ -14,25 +14,25 @@ int main() {
   ssa::Lang::init();
   ssa::Lexer lexer;
   lexer.readFile(
-      "/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/test/"
+	  "/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/frontend/test/"
       "parserExample.txt");
-  auto parser = ssa::Parser(&lexer);
-  parser.getNextToken();
+  auto parser = std::make_unique<ssa::Parser>(&lexer);
+  parser->getNextToken();
   bool flag = true;
   while (flag) {
-    auto token = parser.getCurrentToken();
+	auto token = parser->getCurrentToken();
     if (token.isEOF()) {
       flag = false;
     } else if (token.isKeyword() &&
                token.getKeyword() == ssa::Keyword::EXTERN) {
-      auto function = parser.parseExternExpr();
+	  auto function = parser->parseExternExpr();
       std::cout << ("parsed a function declaration") << std::endl;
     } else if (token.isKeyword() &&
                token.getKeyword() == ssa::Keyword::PROCEDURE) {
-      auto function = parser.parseFunctionExpr();
+	  auto function = parser->parseFunctionExpr();
       std::cout << ("parsed a function definition") << std::endl;
     } else {
-      auto function = parser.parseTopLevelExpr();
+	  auto function = parser->parseTopLevelExpr();
       std::cout << ("parsed a top level expr") << std::endl;
     }
   }

@@ -14,12 +14,12 @@ namespace ssa {
 class NumberExprAST : public ExprAST {
  public:
   /// the constructor will choose the smallest signed type to hold the value
-  explicit NumberExprAST(s_i64_t i64);
+  explicit NumberExprAST(primitiveTypeEnumToType<MAX_SIGNED_PRIMITIVE> number);
   /// the constructor will choose the smallest unsigned type to hold the value
-  explicit NumberExprAST(s_u64_t u64);
+  explicit NumberExprAST(
+      primitiveTypeEnumToType<MAX_UNSIGNED_PRIMITIVE> number);
   // the constructor will choose the smallest floating type to hold the value
-  explicit NumberExprAST(s_f64_t f64);
-
+  explicit NumberExprAST(primitiveTypeEnumToType<MAX_FLOAT_PRIMITIVE> number);
 
   Value codeGen() final;
 

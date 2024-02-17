@@ -11,20 +11,11 @@
 namespace ssa {
 class Value {
  private:
-  using VariantT = std::variant<s_u8_t,
-                                s_u16_t,
-                                s_u32_t,
-                                s_u32_t,
-                                s_u64_t,
-                                s_i8_t,
-                                s_i16_t,
-                                s_i32_t,
-                                s_i64_t,
-                                s_usize_t,
-                                s_isize_t,
-                                s_f32_t,
-                                s_f64_t,
-                                s_char_t>;
+  /// use the maximum size of each type for simplicity
+  using VariantT = std::variant<primitiveTypeEnumToType<MAX_UNSIGNED_PRIMITIVE>,
+                                primitiveTypeEnumToType<MAX_SIGNED_PRIMITIVE>,
+                                primitiveTypeEnumToType<MAX_FLOAT_PRIMITIVE>
+                                >;
 
  public:
   explicit Value(const VariantT& value);

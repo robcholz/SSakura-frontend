@@ -7,8 +7,9 @@
 #include <utility>
 
 namespace ssa {
-Primitive getMinBits(s_u64_t number) {
+Primitive getMinBits(primitiveTypeEnumToType<MAX_UNSIGNED_PRIMITIVE> number) {
   // bits can only be 8,16,32,64
+  static_assert(std::is_same<decltype(number), s_u64_t>::value);
   s_u64_t min_bits = std::ceil(std::log2(number + 1));
   min_bits = (min_bits / 8 + 1) * 8;
   if (min_bits == 8)
@@ -20,8 +21,9 @@ Primitive getMinBits(s_u64_t number) {
   return (Primitive::U64);
 }
 
-Primitive getMinBits(s_i64_t number) {
+Primitive getMinBits(primitiveTypeEnumToType<MAX_SIGNED_PRIMITIVE> number) {
   // bits can only be 8,16,32,64
+  static_assert(std::is_same<decltype(number), s_i64_t>::value);
   s_u64_t min_bits = std::ceil(std::log2(std::abs(number)) + 1);
   min_bits = (min_bits / 8 + 1) * 8;
   if (min_bits == 8)
@@ -33,7 +35,8 @@ Primitive getMinBits(s_i64_t number) {
   return (Primitive::I64);
 }
 
-Primitive getMinBits(s_f64_t number) {
+Primitive getMinBits(primitiveTypeEnumToType<MAX_FLOAT_PRIMITIVE> number) {
+  static_assert(std::is_same<decltype(number), s_f64_t>::value);
   static const s_f64_t F32_MIN = std::numeric_limits<s_f32_t>::min();
   static const s_f64_t F32_MAX = std::numeric_limits<s_f32_t>::max();
   static const s_f64_t F64_MIN = std::numeric_limits<s_f64_t>::min();

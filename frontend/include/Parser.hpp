@@ -9,9 +9,12 @@
 #include <memory>
 
 #include "Lexer.hpp"
+
+#include "ast/BlockExprAST.hpp"
 #include "ast/ExprAST.hpp"
 #include "ast/FunctionAST.hpp"
 #include "ast/ProtoTypeAST.hpp"
+
 #include "rule/ParameterList.hpp"
 #include "rule/VariableDefinition.hpp"
 
@@ -48,11 +51,14 @@ class Parser {
   std::unique_ptr<ExprAST> parseRepeatExpr();
   std::unique_ptr<ExprAST> parseReturnExpr();
   std::unique_ptr<ExprAST> parsePrimaryExpr();
-  std::unique_ptr<ParameterList> parseParamListExpr();
-  std::unique_ptr<VariableDefinition> parseTypeNameExpr();
+  std::unique_ptr<ExprAST> parseBlockExpr();
+  std::unique_ptr<ExprAST> parseAssignmentExpr();
+  std::unique_ptr<ExprAST> parseDeclarationExpr();
+  std::unique_ptr<ExprAST> parseMixedDeclarationDefinitionExpr();
 
-  //types
-  std::unique_ptr<Type> parseType();
+  std::unique_ptr<ParameterList> parseParamListRule();
+  std::unique_ptr<VariableDefinition> parseTypeNameRule();
+  std::unique_ptr<Type> parseTypeRule();
 };
 }  // namespace ssa
 

@@ -161,10 +161,10 @@ std::unique_ptr<ExprAST> Parser::parseExpr() {
 std::unique_ptr<PrototypeAST> Parser::parsePrototypeExpr() {
   std::string function_name = getCurrentToken().getIdentifier();
   Checker::getNextVerifyThisToken(this, Symbol::LPAREN);
-  auto param_list = parseParamListExpr();
+  auto param_list = parseParamListRule();
   Checker::getNextVerifyThisToken(this, Symbol::RPAREN);
   Checker::getNextVerifyThisToken(this, Symbol::COLON);
-  auto return_type = parseType();
+  auto return_type = parseTypeRule();
   getNextToken();  // <type>
   return std::make_unique<PrototypeAST>(function_name, std::move(param_list),
                                         std::move(return_type));
@@ -230,12 +230,12 @@ std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
 }
 
 // ::=name:type,name:type
-std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
+std::unique_ptr<ParameterList> Parser::parseParamListRule() {
   // TODO
   auto parm_list =
       std::make_unique<ParameterList>(ParameterList::emptyParamList());
   while (!Checker::verifyCurrentToken(this, Symbol::RPAREN, true)) {
-    auto type = parseTypeNameExpr();
+    auto type = parseTypeNameRule();
     parm_list->add(std::move(type));
     Checker::getNextVerifyNextToken(this,
                                     std::vector{Symbol::RPAREN, Symbol::COMMA});
@@ -244,16 +244,16 @@ std::unique_ptr<ParameterList> Parser::parseParamListExpr() {
 }
 
 // ::=name:type
-std::unique_ptr<VariableDefinition> Parser::parseTypeNameExpr() {
+std::unique_ptr<VariableDefinition> Parser::parseTypeNameRule() {
   getNextToken();  // <name>
   auto name = lexer->getIdentifierVal();
   Checker::getNextVerifyNextToken(this, Symbol::COLON);
   getNextToken();  // <type>
-  auto type_str = parseType();
+  auto type_str = parseTypeRule();
   return std::make_unique<VariableDefinition>(std::move(type_str), name);
 }
 
-std::unique_ptr<Type> Parser::parseType() {
+std::unique_ptr<Type> Parser::parseTypeRule() {
   const auto& type_str = getCurrentToken().getIdentifier();
   const auto& maybe_primitive = ssa::from_string<Primitive>(type_str);
   std::unique_ptr<Type> type;

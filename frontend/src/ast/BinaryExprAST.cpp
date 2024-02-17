@@ -42,8 +42,6 @@ Value BinaryExprAST::codeGen() {
     case BinaryOperator::NOT:
       return boolNot(rightAst);
   }
-  /// impossible
-  throw std::logic_error("impossible senario!");
 }
 
 Value BinaryExprAST::equality(const Value& value) {}

@@ -14,8 +14,6 @@ TEST_CASE("Lexer Test Assertion") {
         std::ofstream file;
         file.open("/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/test/output.txt");
         std::string ch = "";
-
-
     }
     lexer.closeFile();
 }

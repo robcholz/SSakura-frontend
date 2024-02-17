@@ -169,11 +169,17 @@ static bool isPrimitiveType() {
   return false;
 }
 
-extern Primitive getMinBits(s_i64_t number);
+constexpr Primitive MAX_SIGNED_PRIMITIVE = Primitive::I64;
 
-extern Primitive getMinBits(s_u64_t number);
+constexpr Primitive MAX_UNSIGNED_PRIMITIVE = Primitive::U64;
 
-extern Primitive getMinBits(s_f64_t number);
+constexpr Primitive MAX_FLOAT_PRIMITIVE = Primitive::F64;
+
+extern Primitive getMinBits(primitiveTypeEnumToType<MAX_SIGNED_PRIMITIVE> number);
+
+extern Primitive getMinBits(primitiveTypeEnumToType<MAX_UNSIGNED_PRIMITIVE> number);
+
+extern Primitive getMinBits(primitiveTypeEnumToType<MAX_FLOAT_PRIMITIVE> number);
 
 extern s_u64_t getBitwidth(Primitive type);
 
@@ -188,7 +194,7 @@ std::optional<Primitive> from_string(const std::string& key) {
   return std::nullopt;
 }
 
-static std::string to_string(Primitive elementary){
+static std::string to_string(Primitive elementary) {
   return internal::_elementMap_e2s.at(elementary);
 }
 }  // namespace ssa
