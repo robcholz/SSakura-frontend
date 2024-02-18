@@ -6,26 +6,61 @@
 #ifndef SSAKURA_FRONTEND_ARITHMETICOPERATIONADAPTER_HPP
 #define SSAKURA_FRONTEND_ARITHMETICOPERATIONADAPTER_HPP
 
+#include <functional>
+#include "Attribute.hpp"
 #include "ast/BinaryExprAST.hpp"
 
 namespace ssa {
+class AdapterRegistry;
 class ArithmeticOperationAdapter {
  public:
   ArithmeticOperationAdapter() = delete;
   ~ArithmeticOperationAdapter() = delete;
   ArithmeticOperationAdapter& operator=(ArithmeticOperationAdapter&) = delete;
 
-  static Value equalityGen(const Value& left, const Value& right) {return Value{1};}
-  static Value greaterThanGen(const Value& left, const Value& right) {return Value{1};}
-  static Value lessThanGen(const Value& left, const Value& right) {return Value{1};}
-  static Value boolAndGen(const Value& left, const Value& right) {return Value{1};}
-  static Value boolOrGen(const Value& left, const Value& right) {return Value{1};}
-  static Value boolNotGen(const Value& value) {return Value{1};}
-  static Value modulusGen(const Value& left, const Value& right) {return Value{1};}
-  static Value addGen(const Value& left, const Value& right) {return Value{1};}
-  static Value subtractGen(const Value& left, const Value& right) {return Value{1};}
-  static Value multipleGen(const Value& left, const Value& right) {return Value{1};}
-  static Value divisionGen(const Value& left, const Value& right) {return Value{1};}
+  static SSA_FORCE_INLINE Value equalityGen(const Value& left,
+                                            const Value& right);
+  static SSA_FORCE_INLINE Value greaterThanGen(const Value& left,
+                                               const Value& right);
+  static SSA_FORCE_INLINE Value lessThanGen(const Value& left,
+                                            const Value& right);
+  static SSA_FORCE_INLINE Value boolAndGen(const Value& left,
+                                           const Value& right);
+  static SSA_FORCE_INLINE Value boolOrGen(const Value& left,
+                                          const Value& right);
+  static SSA_FORCE_INLINE Value boolNotGen(const Value& value);
+  static SSA_FORCE_INLINE Value modulusGen(const Value& left,
+                                           const Value& right);
+  static SSA_FORCE_INLINE Value addGen(const Value& left, const Value& right);
+  static SSA_FORCE_INLINE Value subtractGen(const Value& left,
+                                            const Value& right);
+  static SSA_FORCE_INLINE Value multipleGen(const Value& left,
+                                            const Value& right);
+  static SSA_FORCE_INLINE Value divisionGen(const Value& left,
+                                            const Value& right);
+
+ private:
+  friend AdapterRegistry;
+
+  static inline std::function<Value(const Value&, const Value&)>
+      equalityCallback;
+  static inline std::function<Value(const Value&, const Value&)>
+      greaterThanCallback;
+  static inline std::function<Value(const Value&, const Value&)>
+      lessThanCallback;
+  static inline std::function<Value(const Value&, const Value&)>
+      boolAndCallback;
+  static inline std::function<Value(const Value&, const Value&)> boolOrCallback;
+  static inline std::function<Value(const Value&)> boolNotCallback;
+  static inline std::function<Value(const Value&, const Value&)>
+      modulusCallback;
+  static inline std::function<Value(const Value&, const Value&)> addCallback;
+  static inline std::function<Value(const Value&, const Value&)>
+      subtractCallback;
+  static inline std::function<Value(const Value&, const Value&)>
+      multipleCallback;
+  static inline std::function<Value(const Value&, const Value&)>
+      divisionCallback;
 };
 }  // namespace ssa
 
