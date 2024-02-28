@@ -1,7 +1,7 @@
 //
 // Created by robcholz on 2/1/24.
 //
-#include "lang/BinaryOperator.hpp"
+#include "ssa/lang/BinaryOperator.hpp"
 
 using namespace ssa;
 

@@ -1,7 +1,7 @@
 //
 // Created by robcholz on 2/2/24.
 //
-#include "lang/Symbol.hpp"
+#include "ssa/lang/Symbol.hpp"
 
 namespace ssa::internal {
 std::unordered_map<Symbol, s_char_t> _reservedSymbolMap_e2s;

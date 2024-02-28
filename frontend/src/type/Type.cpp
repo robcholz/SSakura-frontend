@@ -1,9 +1,9 @@
 //
 // Created by robcholz on 12/19/23.
 //
-#include "type/Type.hpp"
-#include "Info.hpp"
-#include "lang/Primitive.hpp"
+#include "ssa/type/Type.hpp"
+#include "ssa/Info.hpp"
+#include "ssa/lang/Primitive.hpp"
 
 using namespace ssa;
 

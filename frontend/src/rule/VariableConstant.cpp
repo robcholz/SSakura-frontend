@@ -1,7 +1,7 @@
 //
 // Created by robcholz on 2/1/24.
 //
-#include "rule/VariableConstant.hpp"
+#include "ssa/rule/VariableConstant.hpp"
 
 using namespace ssa;
 
@@ -9,14 +9,14 @@ VariableConstant::VariableConstant(const Type& type,
                                    const std::string& name,
                                    const Value& value) {
   this->uniqueDefinition =
-      new VariableDefinition(std::make_unique<Type>(type), name);
+      new VariableDeclaration(name,value);
   this->variable = new Variable(uniqueDefinition, value);
 }
 
 VariableConstant::VariableConstant(const ssa::Type& type,
                                    const ssa::Value& value) {
   this->uniqueDefinition =
-      new VariableDefinition(std::make_unique<Type>(type), "");
+      new VariableDeclaration("",value);
   this->variable = new Variable(uniqueDefinition, value);
 }
 
@@ -30,5 +30,5 @@ const Value& VariableConstant::getValue() const {
 }
 
 const Type& VariableConstant::getType() const {
-  return uniqueDefinition->getType();
+  return uniqueDefinition->getValue().getType();
 }

@@ -1,10 +1,10 @@
 //
 // Created by robcholz on 11/25/23.
 //
-#include "ast/BinaryExprAST.hpp"
-#include "Info.hpp"
-#include "adapter/ArithmeticOperationAdapter.hpp"
-#include "type/Type.hpp"
+#include "ssa/ast/BinaryExprAST.hpp"
+#include "ssa/Info.hpp"
+#include "ssa/adapter/ArithmeticOperationAdapter.hpp"
+#include "ssa/type/Type.hpp"
 
 using namespace ssa;
 
@@ -43,6 +43,23 @@ Value BinaryExprAST::codeGen() {
     case BinaryOperator::NOT:
       return boolNot(rightAst);
   }
+}
+
+ExprAST::Type BinaryExprAST::getType() const {
+  return ExprAST::Type::BINARY_EXPR;
+}
+
+const BinaryOperator::BinaryOperatorEnum& BinaryExprAST::getOperatorType()
+    const {
+  return op;
+}
+
+const ExprAST& BinaryExprAST::getLHS() const {
+  return *leftExprAst;
+}
+
+const ExprAST& BinaryExprAST::getRHS() const {
+  return *rightExprAst;
 }
 
 Value BinaryExprAST::equality(const Value& left, const Value& right) {

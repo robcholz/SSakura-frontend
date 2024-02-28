@@ -1,20 +1,36 @@
 //
 // Created by robcholz on 11/26/23.
 //
-#include "ast/FunctionAST.hpp"
-#include "Info.hpp"
-#include "adapter/ASTAdapter.hpp"
-#include "ast/ExprAST.hpp"
-#include "ast/ProtoTypeAST.hpp"
+#include "ssa/ast/FunctionAST.hpp"
+#include "ssa/Info.hpp"
+#include "ssa/adapter/ASTAdapter.hpp"
 
 using namespace ssa;
 
 FunctionAST::FunctionAST(std::unique_ptr<PrototypeAST> prototype,
-                         std::unique_ptr<ExprAST> body) {
+                         std::unique_ptr<BlockExprAST> body) {
   this->prototype = std::move(prototype);
   this->body = std::move(body);
 }
 
+FunctionAST::FunctionAST(std::unique_ptr<PrototypeAST> prototype,
+                         std::unique_ptr<ExprAST> body) {
+  this->prototype = std::move(prototype);
+  this->body = std::make_unique<BlockExprAST>(std::move(body));
+}
+
+const PrototypeAST& FunctionAST::getPrototype() const {
+  return *prototype;
+}
+
+const BlockExprAST& FunctionAST::getBody() const {
+  return *body;
+}
+
 Value FunctionAST::codeGen() {
   return ASTAdapter::functionExprGen(prototype, body);
+}
+
+ExprAST::Type FunctionAST::getType() const {
+  return ExprAST::Type::FUNCTION_EXPR;
 }

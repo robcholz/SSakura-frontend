@@ -20,4 +20,5 @@ set_warnings("all")
 set_warnings("error")
 
 includes("frontend/xmake.lua")
---includes("backend/anemos/xmake.lua")
+includes("backend/anemos/xmake.lua")
+includes("ssakura_lang/xmake.lua")

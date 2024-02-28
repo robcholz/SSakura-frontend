@@ -1,9 +1,9 @@
 //
 // Created by robcholz on 11/28/23.
 //
-#include "ast/ProtoTypeAST.hpp"
-#include "Info.hpp"
-#include "adapter/ASTAdapter.hpp"
+#include "ssa/ast/ProtoTypeAST.hpp"
+#include "ssa/Info.hpp"
+#include "ssa/adapter/ASTAdapter.hpp"
 
 using namespace ssa;
 
@@ -17,6 +17,10 @@ PrototypeAST::PrototypeAST(const std::string& name,
 
 std::string PrototypeAST::getName() const {
   return name;
+}
+
+const ParameterList& PrototypeAST::getArguments() const {
+  return *arguments;
 }
 
 const Type& PrototypeAST::getReturnType() const {

@@ -1,7 +1,7 @@
 //
 // Created by robcholz on 2/18/24.
 //
-#include "adapter/ArithmeticOperationAdapter.hpp"
+#include "ssa/adapter/ArithmeticOperationAdapter.hpp"
 
 using namespace ssa;
 

@@ -1,7 +1,7 @@
 //
 // Created by robcholz on 11/27/23.
 //
-#include "Info.hpp"
+#include "ssa/Info.hpp"
 
 
 Info::Info(){

@@ -1,0 +1,12 @@
+PROCEDURE foo(x:I8):I32{
+    IF(x>5){
+        RETURN 0
+    }ELSE{
+        RETURN 3
+    }
+}
+
+PROCEDURE main():I32{
+    print(foo(3))
+    RETURN 0
+}

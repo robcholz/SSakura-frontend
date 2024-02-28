@@ -1,10 +1,10 @@
 //
 // Created by robcholz on 11/28/23.
 //
-#include "ast/IfExprAST.hpp"
-#include "Info.hpp"
-#include "type/Type.hpp"
-#include "adapter/ASTAdapter.hpp"
+#include "ssa/ast/IfExprAST.hpp"
+#include "ssa/Info.hpp"
+#include "ssa/adapter/ASTAdapter.hpp"
+#include "ssa/type/Type.hpp"
 
 using namespace ssa;
 
@@ -16,6 +16,25 @@ IfExprAST::IfExprAST(std::unique_ptr<ExprAST> condition,
   this->elseExpr = std::move(elseExpr);
 }
 
+const ExprAST& IfExprAST::getCondition() const {
+  return *condition;
+}
+
+const ExprAST& IfExprAST::getThenBranch() const {
+  return *thenExpr;
+}
+
+std::optional<std::reference_wrapper<const ExprAST>> IfExprAST::getElseBranch()
+    const {
+  if (elseExpr == nullptr)
+    return std::nullopt;
+  return std::cref(*elseExpr);
+}
+
 Value IfExprAST::codeGen() {
   return ASTAdapter::ifExprGen(condition,thenExpr,elseExpr);
+}
+
+ExprAST::Type IfExprAST::getType() const {
+  return ExprAST::Type::IF_EXPR;
 }

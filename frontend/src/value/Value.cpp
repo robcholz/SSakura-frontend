@@ -1,21 +1,39 @@
 //
 // Created by robcholz on 1/31/24.
 //
-#include "value/Value.hpp"
+#include <utility>
+
+#include "ssa/value/Value.hpp"
 
 using namespace ssa;
 
-Value::Value(const Value::VariantT& value) : type({}) {
-  initializeFrom(value);
+Value::Value(Type type) : type(std::move(type)), primitiveValue({}) {}
+
+Value::Value(const primitiveTypeEnumToType<MAX_SIGNED_PRIMITIVE>& value)
+    : type(getMinBits(value)), primitiveValue({}) {}
+
+Value::Value(const primitiveTypeEnumToType<MAX_UNSIGNED_PRIMITIVE>& value)
+    : type(getMinBits(value)), primitiveValue({}) {}
+
+Value::Value(const primitiveTypeEnumToType<MAX_FLOAT_PRIMITIVE>& value)
+    : type(getMinBits(value)), primitiveValue({}) {}
+
+Value::Value(Type type,
+             const primitiveTypeEnumToType<MAX_SIGNED_PRIMITIVE>& value)
+    : type(std::move(type)), primitiveValue({}) {
+  primitiveValue.signedVal = value;
 }
 
-Value::Value(const Type& type,
-             const Value::VariantT& value)
-    : type(type), primitiveValue(value) {}
+Value::Value(Type type,
+             const primitiveTypeEnumToType<MAX_UNSIGNED_PRIMITIVE>& value)
+    : type(std::move(type)), primitiveValue({}) {
+  primitiveValue.unsignedVal = value;
+}
 
-Value& Value::operator=(const Value::VariantT& value) {
-  initializeFrom(value);
-  return *this;
+Value::Value(Type type,
+             const primitiveTypeEnumToType<MAX_FLOAT_PRIMITIVE>& value)
+    : type(std::move(type)), primitiveValue({}) {
+  primitiveValue.floatVal = value;
 }
 
 const Type& Value::getType() const {

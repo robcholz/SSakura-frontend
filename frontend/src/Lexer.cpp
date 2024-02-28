@@ -1,7 +1,7 @@
 //
 // Created by robcholz on 11/25/23.
 //
-#include "Lexer.hpp"
+#include "ssa/Lexer.hpp"
 #include <spdlog/spdlog.h>
 #include <magic_enum/magic_enum.hpp>
 

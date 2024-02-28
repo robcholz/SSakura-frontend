@@ -1,9 +1,0 @@
-PROCEDURE foo(x:I8):I32{
-    IF(x>5){
-        RETURN 0
-    }ELSE{
-        RETURN 3
-    }
-}
-
-foo(3)

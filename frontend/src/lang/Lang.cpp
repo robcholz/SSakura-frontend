@@ -1,12 +1,12 @@
 //
 // Created by robcholz on 2/1/24.
 //
-#include "lang/Lang.hpp"
+#include "ssa/lang/Lang.hpp"
 #include <magic_enum/magic_enum.hpp>
-#include "lang/Keyword.hpp"
-#include "lang/Primitive.hpp"
-#include "lang/Symbol.hpp"
-#include "syntax/Checker.hpp"
+#include "ssa/lang/Keyword.hpp"
+#include "ssa/lang/Primitive.hpp"
+#include "ssa/lang/Symbol.hpp"
+#include "ssa/syntax/Checker.hpp"
 
 using namespace ssa;
 

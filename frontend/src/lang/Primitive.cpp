@@ -1,10 +1,9 @@
 //
 // Created by robcholz on 2/1/24.
 //
-#include "lang/Primitive.hpp"
+#include "ssa/lang/Primitive.hpp"
 #include <cmath>
 #include <limits>
-#include <utility>
 
 namespace ssa {
 Primitive getMinBits(primitiveTypeEnumToType<MAX_UNSIGNED_PRIMITIVE> number) {
@@ -68,7 +67,7 @@ s_u64_t getBitwidth(Primitive type) {
     case Primitive::I64:
       return 64;
     case Primitive::F64:
-      return 32;
+      return 64;
     case Primitive::USIZE:
       return sizeof(s_usize_t);
     case Primitive::ISIZE:

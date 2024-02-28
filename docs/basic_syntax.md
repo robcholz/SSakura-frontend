@@ -48,8 +48,8 @@ The variable will be deduced to an integer variantType only if a scientific nota
 
 ```
 floating <- 3.2
-floating_explicit_f32:f32 <- 1.8964  # 32bit float
-floating_explicit_f64:f64 <- 1.8964646464646464  # 64bit float
+floating_explicit_f32:f32_t <- 1.8964  # 32bit float
+floating_explicit_f64:f64_t <- 1.8964646464646464  # 64bit float
 ```
 
 ### Boolean
@@ -76,15 +76,15 @@ bool_type_explicit:bool <- 0=1  # evaluates to FALSE since 0 does not equal to 1
 
 | Length | Signed |
 |--------|--------|
-| 32-bit | f32    |
-| 64-bit | f64    |
+| 32-bit | f32_t    |
+| 64-bit | f64_t    |
 
 ### Type Casting
 
 Primitive Types in SSakura can be upcasted implicitly:
 unsigned integers to signed integers.
 integers with smaller bits to integers with bigger bits.
-`f32` to `f64`.
+`f32_t` to `f64_t`.
 `char` to `string`.
 number `char` to integer (`u8` by default).
 number `string` to integer (`int` by default, `string` number overflow or downflow will be silenced).
@@ -94,7 +94,7 @@ number `string` to integer (`int` by default, `string` number overflow or downfl
 Example:
 
 - `use my_custom_type <- int`
-- `use haha_ssakura <- f64`
+- `use haha_ssakura <- f64_t`
 
 Type aliases create a new name for a variantType.
 
@@ -134,10 +134,10 @@ scope example_outer_scope{
 ```
 # global scope
 {
-    use anonymous_scope_t=f32  # anonymous scope
+    use anonymous_scope_t=f32_t  # anonymous scope
     
     {
-        use data_type_t=f64  # nested anonymous scope
+        use data_type_t=f64_t  # nested anonymous scope
     }
 }
 ```
@@ -249,7 +249,7 @@ Example file `MyModule_root.ssa_temp`
 IMPORT xxx.xxx.FooDefinition
 IMPORT xxx.xxx.GreatWork
 
-EXTERN foo(param:int,param:f32,param:mytype):void
+EXTERN foo(param:int,param:f32_t,param:mytype):void
 EXTERN foo1():void
 ```
 

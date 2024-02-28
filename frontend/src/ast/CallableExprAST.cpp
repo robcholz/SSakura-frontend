@@ -1,9 +1,9 @@
 //
 // Created by robcholz on 11/25/23.
 //
-#include "ast/CallableExprAST.hpp"
-#include "Info.hpp"
-#include "adapter/ASTAdapter.hpp"
+#include "ssa/ast/CallableExprAST.hpp"
+#include "ssa/Info.hpp"
+#include "ssa/adapter/ASTAdapter.hpp"
 
 using namespace ssa;
 
@@ -16,4 +16,8 @@ CallableExprAST::CallableExprAST(
 
 Value CallableExprAST::codeGen() {
   return ASTAdapter::callableExprGen(callable, arguments);
+}
+
+ExprAST::Type CallableExprAST::getType() const {
+  return ExprAST::Type::CALLABLE_EXPR;
 }

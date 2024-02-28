@@ -1,19 +1,18 @@
 //
 // Created by robcholz on 11/25/23.
 //
-#include <ranges>
 #include <vector>
 
-#include "Parser.hpp"
-#include "ast/BinaryExprAST.hpp"
-#include "ast/CallableExprAST.hpp"
-#include "ast/FunctionAST.hpp"
-#include "ast/IfExprAST.hpp"
-#include "ast/NumberExprAST.hpp"
-#include "ast/ProtoTypeAST.hpp"
-#include "ast/VariableExprAST.hpp"
-#include "lang/BinaryOperator.hpp"
-#include "syntax/Checker.hpp"
+#include "ssa/Parser.hpp"
+#include "ssa/ast/BinaryExprAST.hpp"
+#include "ssa/ast/CallableExprAST.hpp"
+#include "ssa/ast/FunctionAST.hpp"
+#include "ssa/ast/IfExprAST.hpp"
+#include "ssa/ast/NumberExprAST.hpp"
+#include "ssa/ast/ProtoTypeAST.hpp"
+#include "ssa/ast/VariableExprAST.hpp"
+#include "ssa/lang/BinaryOperator.hpp"
+#include "ssa/syntax/Checker.hpp"
 
 using namespace ssa;
 
@@ -244,16 +243,16 @@ std::unique_ptr<ParameterList> Parser::parseParamListRule() {
 }
 
 // ::=name:type
-std::unique_ptr<VariableDefinition> Parser::parseTypeNameRule() {
+std::unique_ptr<VariableDeclaration> Parser::parseTypeNameRule() {
   getNextToken();  // <name>
   auto name = lexer->getIdentifierVal();
   Checker::getNextVerifyNextToken(this, Symbol::COLON);
   getNextToken();  // <type>
-  auto type_str = parseTypeRule();
-  return std::make_unique<VariableDefinition>(std::move(type_str), name);
+  std::unique_ptr<Type> type_str = parseTypeRule();
+  return std::make_unique<VariableDeclaration>(name, Value(*type_str));
 }
 
-std::unique_ptr<Type> Parser::parseTypeRule() {
+std::unique_ptr<Type> Parser::parseTypeRule() const {
   const auto& type_str = getCurrentToken().getIdentifier();
   const auto& maybe_primitive = ssa::from_string<Primitive>(type_str);
   std::unique_ptr<Type> type;

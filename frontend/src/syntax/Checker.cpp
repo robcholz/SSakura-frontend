@@ -1,7 +1,7 @@
 //
 // Created by robcholz on 12/22/23.
 //
-#include "syntax/Checker.hpp"
+#include "ssa/syntax/Checker.hpp"
 
 using namespace ssa;
 

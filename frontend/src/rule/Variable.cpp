@@ -1,11 +1,11 @@
 //
 // Created by robcholz on 2/1/24.
 //
-#include "rule/Variable.hpp"
+#include "ssa/rule/Variable.hpp"
 
 using namespace ssa;
 
-Variable::Variable(ssa::VariableDefinition* definition,
+Variable::Variable(ssa::VariableDeclaration* definition,
                    const ssa::Value& value):variableDefinition(definition), variableValue(value) {
 }
 
