@@ -41,7 +41,6 @@ int main() {
       /// add func ast to registry
       func_registry.add(std::unique_ptr<anemos::FunctionExpressionAST>(
           dynamic_cast<anemos::FunctionExpressionAST*>(final_ast.release())));
-
       std::cout << ("parsed a function definition") << std::endl;
     } else {
       auto function = parser->parseTopLevelExpr();
@@ -49,10 +48,10 @@ int main() {
     }
   }
   auto param=anemos::Parameter(
-      anemos::VariableDeclaration("a", anemos::Value::makeF32(0.f))
-
+      //anemos::VariableDeclaration("a", anemos::Value::makeF32(0.f))
       );
   func_registry.invoke("main", std::move(param));
   std::error_code EC;
+  lexer.closeFile();
   return 0;
 }

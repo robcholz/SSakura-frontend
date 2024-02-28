@@ -6,11 +6,13 @@
 #ifndef SSAKURA_FRONTEND_LEXER_HPP
 #define SSAKURA_FRONTEND_LEXER_HPP
 
+#include <deque>
 #include <fstream>
 #include <string>
 #include <string_view>
 #include <variant>
 
+#include "Attribute.hpp"
 #include "Token.hpp"
 
 namespace ssa {
@@ -20,21 +22,15 @@ class Lexer {
 
   ~Lexer() = default;
 
-  void readFile(const std::string& filename);
+  void readFile(std::string_view filename);
 
   void closeFile();
 
   Token getToken();
-
-  std::string getLiteralVal() const;
-
-  std::string getIdentifierVal() const;
-
-  Keyword getKeyword() const;
-
-  Symbol getSymbol() const;
-
-  TokenCategory getTokenCategory() const;
+  /// get but not eat the next token
+  Token lookAhead();
+  /// get but not eat the next n tokens
+  Token lookAhead(std::size_t size);
 
  private:
   std::ifstream file;
@@ -44,11 +40,13 @@ class Lexer {
   std::string pattern;
 
   Token token;
+  std::deque<Token> tokenBuffer;
 
   s_char_t getNextChar();
+  Token getNextToken();
 
-  inline static bool allOf(const std::string_view& str,
-                           bool (*condition_function)(char)) {
+  SSA_FORCE_INLINE static bool allOf(const std::string_view& str,
+                                     bool (*condition_function)(char)) {
     if (str.length() == 1)
       return condition_function(str[0]);
     for (const auto& ch : str) {
@@ -58,17 +56,17 @@ class Lexer {
     return true;
   }
 
-  inline static bool equals(s_char_t str, Symbol symbol) {
+  SSA_FORCE_INLINE static bool equals(s_char_t str, Symbol symbol) {
     return str == static_cast<decltype(str)>(symbol);
   }
 
-  inline static bool isSpace(s_char_t str) { return isspace(str); }
+  SSA_FORCE_INLINE static bool isSpace(s_char_t str) { return isspace(str); }
 
-  inline static bool isAlpha(s_char_t str) { return isalpha(str); }
+  SSA_FORCE_INLINE static bool isAlpha(s_char_t str) { return isalpha(str); }
 
-  inline static bool isNum(s_char_t str) { return isalnum(str); }
+  SSA_FORCE_INLINE static bool isNum(s_char_t str) { return isalnum(str); }
 
-  inline static bool isDigit(s_char_t str) { return isdigit(str); }
+  SSA_FORCE_INLINE static bool isDigit(s_char_t str) { return isdigit(str); }
 };
 }
 

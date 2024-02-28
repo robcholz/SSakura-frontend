@@ -42,7 +42,7 @@ int Parser::getTokenPrecedence() const {
 // numberExpr
 // ::=number
 std::unique_ptr<ExprAST> Parser::parseNumberExpr() {
-  auto number = lexer->getLiteralVal();
+  auto number = getCurrentToken().getLiteral();
   std::unique_ptr<NumberExprAST> result;
 
   if (number.find('.') != std::string::npos ||
@@ -85,7 +85,7 @@ std::unique_ptr<ExprAST> Parser::parseBraceExpr() {
 // ::=identifier
 // ::=identifier(expr,expr,...)
 std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
-  auto identifier = lexer->getIdentifierVal();
+  auto identifier = getCurrentToken().getIdentifier();
   getNextToken();  // eat identifier
   if (!Checker::verifyCurrentToken(this, Symbol::LPAREN, true)) {
     return std::make_unique<VariableExprAST>(identifier);
@@ -230,9 +230,13 @@ std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
 
 // ::=name:type,name:type
 std::unique_ptr<ParameterList> Parser::parseParamListRule() {
-  // TODO
   auto parm_list =
       std::make_unique<ParameterList>(ParameterList::emptyParamList());
+  if (lexer->lookAhead().isSymbol() &&
+      lexer->lookAhead().getSymbol() == Symbol::RPAREN) {
+    Checker::getNextVerifyNextToken(this, Symbol::RPAREN);
+    return parm_list;
+  }
   while (!Checker::verifyCurrentToken(this, Symbol::RPAREN, true)) {
     auto type = parseTypeNameRule();
     parm_list->add(std::move(type));
@@ -245,7 +249,7 @@ std::unique_ptr<ParameterList> Parser::parseParamListRule() {
 // ::=name:type
 std::unique_ptr<VariableDeclaration> Parser::parseTypeNameRule() {
   getNextToken();  // <name>
-  auto name = lexer->getIdentifierVal();
+  auto name = getCurrentToken().getIdentifier();
   Checker::getNextVerifyNextToken(this, Symbol::COLON);
   getNextToken();  // <type>
   std::unique_ptr<Type> type_str = parseTypeRule();

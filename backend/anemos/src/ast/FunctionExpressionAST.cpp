@@ -26,7 +26,7 @@ std::string FunctionExpressionAST::getName() const {
 }
 
 Value FunctionExpressionAST::invoke(const anemos::Parameter& param) {
-
+  return Value::makeF32(0);
 }
 
 void FunctionExpressionAST::execute() {}

@@ -13,7 +13,7 @@ Lexer::Lexer() {
   this->token = Token{};
 }
 
-void Lexer::readFile(const std::string& filename) {
+void Lexer::readFile(std::string_view filename) {
   file.open(filename);
   while (!file.is_open()) {
   }
@@ -30,6 +30,26 @@ ssa::s_char_t Lexer::getNextChar() {
 }
 
 Token Lexer::getToken() {
+  if (tokenBuffer.empty())
+    return getNextToken();
+  Token tk = tokenBuffer.front();
+  tokenBuffer.pop_front();
+  return std::move(tk);
+}
+
+Token Lexer::lookAhead() {
+  return lookAhead(1);
+}
+
+Token Lexer::lookAhead(std::size_t size) {
+  if (tokenBuffer.size() < size)
+    for (std::ptrdiff_t i = 0;
+         i < static_cast<std::ptrdiff_t>(size) - tokenBuffer.size(); i++)
+      tokenBuffer.push_back(getNextToken());
+  return tokenBuffer.front();
+}
+
+Token Lexer::getNextToken() {
   while (isSpace(lastChar)) {
     lastChar = getNextChar();
   }  // ignore space
@@ -93,24 +113,4 @@ Token Lexer::getToken() {
   std::string result;
   result = currChar;
   return token;
-}
-
-std::string Lexer::getLiteralVal() const {
-  return std::get<std::string>(token.tokens);
-}
-
-std::string Lexer::getIdentifierVal() const {
-  return std::get<std::string>(token.tokens);
-}
-
-Keyword Lexer::getKeyword() const {
-  return std::get<Keyword>(token.tokens);
-}
-
-Symbol Lexer::getSymbol() const {
-  return std::get<Symbol>(token.tokens);
-}
-
-TokenCategory Lexer::getTokenCategory() const {
-  return token.category;
 }
