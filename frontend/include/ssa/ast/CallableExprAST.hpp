@@ -9,20 +9,24 @@
 #include <memory>
 #include <string>
 #include <vector>
+
 #include "ExprAST.hpp"
+#include "ssa/rule/FormalParameter.hpp"
 
 namespace ssa {
 
 class CallableExprAST : public ExprAST {
  public:
-  explicit CallableExprAST(const std::string& callable,
-                           std::vector<std::unique_ptr<ExprAST>> arguments);
+  explicit CallableExprAST(const std::string& callable, std::unique_ptr<FormalParameter> arguments);
   Value codeGen() final;
   ExprAST::Type getType() const final;
 
+  const std::string& getName() const;
+  const FormalParameter& getArguments() const;
+
  private:
   std::string callable;
-  std::vector<std::unique_ptr<ExprAST>> arguments;
+  std::unique_ptr<FormalParameter> arguments;
 };
 }  // namespace ssa
 

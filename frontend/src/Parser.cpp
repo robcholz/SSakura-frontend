@@ -16,17 +16,14 @@
 
 using namespace ssa;
 
-Parser::Parser(Lexer* lexer) {
-  this->lexer = lexer;
-  this->currentToken = Token{};
-}
+Parser::Parser(Lexer& lexer) : lexer(std::ref(lexer)), currentToken({}) {}
 
-const Lexer* Parser::getLexer() const {
+const Lexer& Parser::getLexer() const {
   return lexer;
 }
 
 const Token& Parser::getNextToken() {
-  currentToken = lexer->getToken();
+  currentToken = lexer.get().getToken();
   return currentToken;
 }
 
@@ -83,27 +80,28 @@ std::unique_ptr<ExprAST> Parser::parseBraceExpr() {
 
 // identifierExpr
 // ::=identifier
-// ::=identifier(expr,expr,...)
 std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
-  auto identifier = getCurrentToken().getIdentifier();
-  getNextToken();  // eat identifier
-  if (!Checker::verifyCurrentToken(this, Symbol::LPAREN, true)) {
+  if (lexer.get().lookAhead().isSymbol() &&
+      lexer.get().lookAhead().getSymbol() != Symbol::LPAREN) {
+    auto identifier = getCurrentToken().getIdentifier();
+    getNextToken();  // eat identifier
     return std::make_unique<VariableExprAST>(identifier);
   }  // ::=identifier
 
+  return parseCallableExpr();
+}
+
+// ::=identifier(expr,expr,...)
+std::unique_ptr<ExprAST> Parser::parseCallableExpr() {
+  auto identifier = getCurrentToken().getIdentifier();
+  getNextToken();  // eat identifier
   Checker::getNextVerifyThisToken(this, Symbol::LPAREN);
-  // TODO
-  std::vector<std::unique_ptr<ExprAST>> arguments;
-  while (!Checker::verifyCurrentToken(this, Symbol::RPAREN, true)) {
-    arguments.push_back(parseExpr());
-    if (Checker::verifyCurrentToken(this, Symbol::RPAREN, true)) {
-      break;
-    } else {
-      getNextToken();
-    }
-  }
+  auto parameter =
+      std::make_unique<FormalParameter>(FormalParameter::emptyParameter());
+  // TODO actual param
+  parameter = parseFormalParameterRule();
   Checker::getNextVerifyThisToken(this, Symbol::RPAREN);
-  return std::make_unique<CallableExprAST>(identifier, std::move(arguments));
+  return std::make_unique<CallableExprAST>(identifier, std::move(parameter));
 }
 
 /// primaryExpr
@@ -160,13 +158,13 @@ std::unique_ptr<ExprAST> Parser::parseExpr() {
 std::unique_ptr<PrototypeAST> Parser::parsePrototypeExpr() {
   std::string function_name = getCurrentToken().getIdentifier();
   Checker::getNextVerifyThisToken(this, Symbol::LPAREN);
-  auto param_list = parseParamListRule();
+  auto formal_parameter = parseFormalParameterRule();
   Checker::getNextVerifyThisToken(this, Symbol::RPAREN);
   Checker::getNextVerifyThisToken(this, Symbol::COLON);
   auto return_type = parseTypeRule();
   getNextToken();  // <type>
-  return std::make_unique<PrototypeAST>(function_name, std::move(param_list),
-                                        std::move(return_type));
+  return std::make_unique<PrototypeAST>(
+      function_name, std::move(formal_parameter), std::move(return_type));
 }
 
 std::unique_ptr<PrototypeAST> Parser::parseExternExpr() {
@@ -187,7 +185,7 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
   if (auto e = parseExpr()) {
     auto proto = std::make_unique<PrototypeAST>(
         "main",
-        std::make_unique<ParameterList>(ParameterList::emptyParamList()),
+        std::make_unique<FormalParameter>(FormalParameter::emptyParameter()),
         std::make_unique<Type>(Primitive::I32));
     return std::make_unique<FunctionAST>(std::move(proto), std::move(e));
   }
@@ -229,11 +227,11 @@ std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
 }
 
 // ::=name:type,name:type
-std::unique_ptr<ParameterList> Parser::parseParamListRule() {
+std::unique_ptr<FormalParameter> Parser::parseFormalParameterRule() {
   auto parm_list =
-      std::make_unique<ParameterList>(ParameterList::emptyParamList());
-  if (lexer->lookAhead().isSymbol() &&
-      lexer->lookAhead().getSymbol() == Symbol::RPAREN) {
+      std::make_unique<FormalParameter>(FormalParameter::emptyParameter());
+  if (lexer.get().lookAhead().isSymbol() &&
+      lexer.get().lookAhead().getSymbol() == Symbol::RPAREN) {
     Checker::getNextVerifyNextToken(this, Symbol::RPAREN);
     return parm_list;
   }

@@ -28,7 +28,7 @@ class FunctionRegistry {
 
   bool contains(const FunctionExpressionAST& functionExpressionAst) const;
 
-  std::optional<Value> invoke(const std::string& function,const Parameter& parameter) const;
+  std::optional<Value> invoke(const std::string& function,const FormalParameter& parameter) const;
 
  private:
   FunctionRegistry() = default;

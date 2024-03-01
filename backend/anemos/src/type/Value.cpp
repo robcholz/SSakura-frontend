@@ -5,6 +5,11 @@
 
 using namespace anemos;
 
+Value::Value(const anemos::Value& value) : type(value.type) {
+  this->storage = value.storage;
+  this->objectReference = value.objectReference;
+}
+
 Value Value::makeSignedInteger(anemos::max_signed_integer_t value, Type type) {
   Value val;
   val.storage.i_int = value;

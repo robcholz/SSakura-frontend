@@ -208,7 +208,7 @@ std::unique_ptr<anemos::ExpressionAST> ast_visitor(const ssa::ExprAST* ast) {
       anemos_function->addName(prototype.getName());
       anemos_function->addReturn(toAnemosType(prototype.getReturnType()));
 
-      anemos::Parameter parameter;
+      anemos::FormalParameter parameter;
       std::for_each(prototype.getArguments().begin(),
                     prototype.getArguments().end(),
                     [&parameter](const auto& param) {

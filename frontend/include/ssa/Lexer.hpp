@@ -35,11 +35,13 @@ class Lexer {
  private:
   std::ifstream file;
 
+  // temporary variables
   s_char_t lastChar;
   s_char_t currChar;
   std::string pattern;
-
   Token token;
+
+  // token buffer for lookAhead feature
   std::deque<Token> tokenBuffer;
 
   s_char_t getNextChar();

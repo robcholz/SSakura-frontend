@@ -15,7 +15,7 @@ bool FunctionRegistry::contains(
 }
 
 std::optional<Value> FunctionRegistry::invoke(const std::string& function,
-                              const Parameter& parameter) const {
+                              const FormalParameter& parameter) const {
   if(registry.contains(function)){
     return std::make_optional(registry.at(function)->invoke(parameter));
   }

@@ -9,7 +9,7 @@ void FunctionExpressionAST::addName(std::string name) {
   this->funcName = std::move(name);
 }
 
-void FunctionExpressionAST::addParameter(anemos::Parameter param) {
+void FunctionExpressionAST::addParameter(anemos::FormalParameter param) {
   this->parameter = std::move(param);
 }
 
@@ -25,7 +25,7 @@ std::string FunctionExpressionAST::getName() const {
   return this->funcName;
 }
 
-Value FunctionExpressionAST::invoke(const anemos::Parameter& param) {
+Value FunctionExpressionAST::invoke(const anemos::FormalParameter& param) {
   return Value::makeF32(0);
 }
 

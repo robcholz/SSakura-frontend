@@ -12,7 +12,7 @@
 namespace anemos {
 class NumberExpressionAST : public ExpressionAST {
  public:
-  explicit NumberExpressionAST(Value val);
+  explicit NumberExpressionAST(const Value& val);
 
   void execute() final;
 

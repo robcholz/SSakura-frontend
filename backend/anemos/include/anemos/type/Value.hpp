@@ -12,6 +12,8 @@
 namespace anemos {
 class Value {
  public:
+  Value(const Value& value);
+
   static Value makeSignedInteger(max_signed_integer_t value, Type type);
   static Value makeUnsignedInteger(max_unsigned_integer_t value, Type type);
   static Value makeF32(f32_t value);

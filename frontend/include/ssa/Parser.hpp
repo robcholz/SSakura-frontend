@@ -6,6 +6,7 @@
 #ifndef SSAKURA_FRONTEND_PARSER_HPP
 #define SSAKURA_FRONTEND_PARSER_HPP
 
+#include <functional>
 #include <memory>
 
 #include "Lexer.hpp"
@@ -15,14 +16,14 @@
 #include "ssa/ast/FunctionAST.hpp"
 #include "ssa/ast/ProtoTypeAST.hpp"
 
-#include "ssa/rule/ParameterList.hpp"
+#include "ssa/rule/FormalParameter.hpp"
 #include "ssa/rule/VariableDeclaration.hpp"
 
 namespace ssa {
 class Parser {
  public:
-  explicit Parser(Lexer* lexer);
-  const Lexer* getLexer() const;
+  explicit Parser(Lexer& lexer);
+  const Lexer& getLexer() const;
 
   const Token& getNextToken();
   const Token& getCurrentToken() const;
@@ -33,7 +34,7 @@ class Parser {
   std::unique_ptr<FunctionAST> parseTopLevelExpr();
 
  private:
-  Lexer* lexer;
+  std::reference_wrapper<Lexer> lexer;
   Token currentToken;
 
   int getTokenPrecedence() const;
@@ -43,6 +44,7 @@ class Parser {
   std::unique_ptr<ExprAST> parseParenthesisExpr();
   std::unique_ptr<ExprAST> parseBraceExpr();
   std::unique_ptr<ExprAST> parseIdentifierExpr();
+  std::unique_ptr<ExprAST> parseCallableExpr();
   std::unique_ptr<ExprAST> parseBinaryOPRightExpr(
       int minPrecedence,
       std::unique_ptr<ExprAST> leftExpr);
@@ -56,7 +58,7 @@ class Parser {
   std::unique_ptr<ExprAST> parseDeclarationExpr();
   std::unique_ptr<ExprAST> parseMixedDeclarationDefinitionExpr();
 
-  std::unique_ptr<ParameterList> parseParamListRule();
+  std::unique_ptr<FormalParameter> parseFormalParameterRule();
   std::unique_ptr<VariableDeclaration> parseTypeNameRule();
   std::unique_ptr<Type> parseTypeRule() const;
 };

@@ -44,7 +44,9 @@ Token Lexer::lookAhead() {
 Token Lexer::lookAhead(std::size_t size) {
   if (tokenBuffer.size() < size)
     for (std::ptrdiff_t i = 0;
-         i < static_cast<std::ptrdiff_t>(size) - tokenBuffer.size(); i++)
+         i < static_cast<std::ptrdiff_t>(size) -
+                 static_cast<std::ptrdiff_t>(tokenBuffer.size());
+         i++)
       tokenBuffer.push_back(getNextToken());
   return tokenBuffer.front();
 }

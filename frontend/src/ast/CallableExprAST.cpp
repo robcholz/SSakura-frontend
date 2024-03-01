@@ -9,15 +9,23 @@ using namespace ssa;
 
 CallableExprAST::CallableExprAST(
     const std::string& callable,
-    std::vector<std::unique_ptr<ExprAST>> arguments) {
+    std::unique_ptr<FormalParameter> arguments) {
   this->callable = callable;
   this->arguments = std::move(arguments);
 }
 
 Value CallableExprAST::codeGen() {
-  return ASTAdapter::callableExprGen(callable, arguments);
+  return ASTAdapter::callableExprGen(callable, *arguments);
 }
 
 ExprAST::Type CallableExprAST::getType() const {
   return ExprAST::Type::CALLABLE_EXPR;
+}
+
+const std::string& CallableExprAST::getName() const {
+  return callable;
+}
+
+const FormalParameter& CallableExprAST::getArguments() const {
+  return *arguments;
 }

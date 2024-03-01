@@ -32,7 +32,7 @@ class ASTAdapter {
 
   static SSA_FORCE_INLINE Value callableExprGen(
       std::string_view callable,
-      const std::vector<std::unique_ptr<ExprAST>>& arguments);
+      const FormalParameter& arguments);
 
   static SSA_FORCE_INLINE Value functionExprGen(const std::unique_ptr<PrototypeAST>& prototype,
                                const std::unique_ptr<BlockExprAST>& body);
@@ -43,7 +43,7 @@ class ASTAdapter {
 
   static SSA_FORCE_INLINE Function prototypeExprGen(
       std::string_view name,
-      const std::unique_ptr<ParameterList>& arguments,
+      const std::unique_ptr<FormalParameter>& arguments,
       const std::unique_ptr<Type>& returnType);
 
   static SSA_FORCE_INLINE Value numberExprGen(const std::unique_ptr<Value>& constant);
@@ -59,7 +59,7 @@ class ASTAdapter {
                       const std::unique_ptr<ExprAST>&)>
       ifExprCallback;
   static inline std::function<Value(std::string_view,
-                      const std::vector<std::unique_ptr<ExprAST>>&)>
+                      const FormalParameter&)>
       callableExprCallback;
   static inline std::function<Value(const std::unique_ptr<PrototypeAST>&,
                       const std::unique_ptr<BlockExprAST>&)>
@@ -69,7 +69,7 @@ class ASTAdapter {
                       const std::unique_ptr<ExprAST>&)>
       repeatExprCallback;
   static inline std::function<Function(std::string_view,
-                         const std::unique_ptr<ParameterList>&,
+                         const std::unique_ptr<FormalParameter>&,
                          const std::unique_ptr<Type>&)>
       prototypeExprCallback;
   static inline std::function<Value(const std::unique_ptr<Value>&)>

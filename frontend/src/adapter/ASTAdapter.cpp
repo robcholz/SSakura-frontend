@@ -21,7 +21,7 @@ Value ASTAdapter::ifExprGen(const std::unique_ptr<ExprAST>& condition,
 
 Value ASTAdapter::callableExprGen(
     std::string_view callable,
-    const std::vector<std::unique_ptr<ExprAST>>& arguments) {
+    const FormalParameter& arguments) {
   if (callableExprCallback)
     return callableExprCallback(callable, arguments);
   return Value{Primitive::I8};
@@ -45,7 +45,7 @@ Value ASTAdapter::repeatExprGen(RepeatExprAST::Type repeatType,
 
 Function ASTAdapter::prototypeExprGen(
     std::string_view name,
-    const std::unique_ptr<ParameterList>& arguments,
+    const std::unique_ptr<FormalParameter>& arguments,
     const std::unique_ptr<Type>& returnType) {
   if (prototypeExprCallback)
     return prototypeExprCallback(name, arguments, returnType);

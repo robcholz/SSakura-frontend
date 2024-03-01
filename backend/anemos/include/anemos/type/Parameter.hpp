@@ -10,10 +10,10 @@
 #include "VariableDeclaration.hpp"
 
 namespace anemos {
-class Parameter {
+class FormalParameter {
  public:
   template <typename... Args>
-  explicit Parameter(const Args&... args) {
+  explicit FormalParameter(const Args&... args) {
     parameters.reserve(sizeof...(Args));
     (parameters.push_back(args), ...);
   }

@@ -1,7 +1,6 @@
 //
 // Created by robcholz on 11/26/23.
 //
-#include <fmt/core.h>
 #include <iostream>
 
 #include <catch2/catch_all.hpp>
@@ -22,7 +21,7 @@ int main() {
       "/Users/zhangjie/Documents/Code/CompletePrograms/SSakura-frontend/"
       "ssakura_lang/test/"
       "parserExample.txt");
-  auto parser = std::make_unique<ssa::Parser>(&lexer);
+  auto parser = std::make_unique<ssa::Parser>(lexer);
   parser->getNextToken();
   bool flag = true;
   while (flag) {
@@ -47,7 +46,7 @@ int main() {
       std::cout << ("parsed a top level expr") << std::endl;
     }
   }
-  auto param=anemos::Parameter(
+  auto param=anemos::FormalParameter(
       //anemos::VariableDeclaration("a", anemos::Value::makeF32(0.f))
       );
   func_registry.invoke("main", std::move(param));

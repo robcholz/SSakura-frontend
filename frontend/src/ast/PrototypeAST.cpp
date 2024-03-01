@@ -8,7 +8,7 @@
 using namespace ssa;
 
 PrototypeAST::PrototypeAST(const std::string& name,
-                           std::unique_ptr<ParameterList> arguments,
+                           std::unique_ptr<FormalParameter> arguments,
                            std::unique_ptr<Type> returnType)
     : returnType(std::move(returnType)) {
   this->name = name;
@@ -19,7 +19,7 @@ std::string PrototypeAST::getName() const {
   return name;
 }
 
-const ParameterList& PrototypeAST::getArguments() const {
+const FormalParameter& PrototypeAST::getArguments() const {
   return *arguments;
 }
 

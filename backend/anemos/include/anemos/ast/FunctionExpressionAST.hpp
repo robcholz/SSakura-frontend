@@ -20,19 +20,19 @@ class FunctionExpressionAST : public ExpressionAST {
   ~FunctionExpressionAST() override = default;
 
   void addName(std::string name);
-  void addParameter(Parameter parameter);
+  void addParameter(FormalParameter parameter);
   void addReturn(Type type);
   void addBody(std::unique_ptr<ExpressionAST> body);
 
   std::string getName() const;
 
-  Value invoke(const Parameter& param);
+  Value invoke(const FormalParameter& param);
 
   void execute() final;
 
  private:
   std::string funcName;
-  Parameter parameter;
+  FormalParameter parameter;
   Type returnType{Primitive::I32};
   std::unique_ptr<ExpressionAST> funcBody;
 };
