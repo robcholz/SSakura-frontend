@@ -12,12 +12,14 @@
 namespace ssa {
 class VariableConstant {
  public:
-  explicit VariableConstant(const Type& type,
-                            const std::string& name,
+  /// named constant
+  explicit VariableConstant(const std::string& name,
                             const Value& value);
+  /// anonymous constant
   explicit VariableConstant(const Type& type, const Value& value);
 
   ~VariableConstant();
+
   const Value& getValue() const;
   const Type& getType() const;
 

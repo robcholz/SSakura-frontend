@@ -251,7 +251,7 @@ std::unique_ptr<VariableDeclaration> Parser::parseTypeNameRule() {
   Checker::getNextVerifyNextToken(this, Symbol::COLON);
   getNextToken();  // <type>
   std::unique_ptr<Type> type_str = parseTypeRule();
-  return std::make_unique<VariableDeclaration>(name, Value(*type_str));
+  return std::make_unique<VariableDeclaration>(name, *type_str);
 }
 
 std::unique_ptr<Type> Parser::parseTypeRule() const {

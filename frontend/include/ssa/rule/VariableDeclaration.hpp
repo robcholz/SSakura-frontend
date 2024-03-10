@@ -6,19 +6,21 @@
 #ifndef SSAKURA_FRONTEND_VARIABLEDECLARATION_HPP
 #define SSAKURA_FRONTEND_VARIABLEDECLARATION_HPP
 
-#include "ssa/value/Value.hpp"
+#include "ssa/type/Type.hpp"
 
 namespace ssa {
 class VariableDeclaration {
  public:
-  explicit VariableDeclaration(std::string name,Value value);
+  explicit VariableDeclaration(std::string name, Type type);
+
+  bool operator==(const VariableDeclaration& other) const;
 
   std::string getName()const;
-  const Value& getValue()const;
+  const Type& getType() const;
 
  private:
   std::string variableName;
-  Value variableValue;
+  Type variableType;
 };
 }  // namespace ssa
 

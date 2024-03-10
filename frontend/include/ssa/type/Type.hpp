@@ -19,6 +19,7 @@ class Type {
   Type(Primitive type);
 
   Type& operator=(Primitive type);
+  bool operator==(const Type& other) const;
 
   uint64_t getBitWidth() const;
   bool isFloat() const;

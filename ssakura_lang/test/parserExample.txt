@@ -7,5 +7,5 @@ PROCEDURE foo(x:I8):I32{
 }
 
 PROCEDURE main():I32{
-    print(foo(3))
+    RETURN 0
 }

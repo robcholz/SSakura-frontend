@@ -213,7 +213,7 @@ std::unique_ptr<anemos::ExpressionAST> ast_visitor(const ssa::ExprAST* ast) {
                     prototype.getArguments().end(),
                     [&parameter](const auto& param) {
                       parameter.add(anemos::VariableDeclaration(
-                          param->getName(), toAnemosValue(param->getValue())));
+                          param->getName(), toAnemosType(param->getType())));
                     });
       anemos_function->addParameter(std::move(parameter));
       auto body = ast_visitor(&function_ast->getBody());

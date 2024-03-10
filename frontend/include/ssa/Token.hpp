@@ -6,6 +6,7 @@
 #ifndef SSAKURA_FRONTEND_TOKEN_HPP
 #define SSAKURA_FRONTEND_TOKEN_HPP
 
+#include <expected>
 #include "ssa/lang/Keyword.hpp"
 #include "ssa/lang/Primitive.hpp"
 #include "ssa/lang/Symbol.hpp"
@@ -40,6 +41,30 @@ class Token {
     return std::get<std::string>(tokens);
   }
 
+  std::expected<Symbol, TokenCategory> asSymbol() const {
+    if (is(TokenCategory::SYMBOL))
+      return getSymbol();
+    return std::unexpected(category);
+  }
+
+  std::expected<Keyword, TokenCategory> asKeyword() const {
+    if (is(TokenCategory::KEYWORD))
+      return getKeyword();
+    return std::unexpected(category);
+  }
+
+  std::expected<std::string, TokenCategory> asLiteral() const {
+    if (is(TokenCategory::LITERAL))
+      return getLiteral();
+    return std::unexpected(category);
+  }
+
+  std::expected<std::string, TokenCategory> asIdentifier() const {
+    if (is(TokenCategory::IDENTIFIER))
+      return getIdentifier();
+    return std::unexpected(category);
+  }
+
   bool isSymbol() const { return category == TokenCategory::SYMBOL; }
 
   bool isKeyword() const { return category == TokenCategory::KEYWORD; }
@@ -59,6 +84,8 @@ class Token {
       return isSymbol();
     return false;
   }
+
+  bool is(TokenCategory token) const { return category == token; }
 
   template <typename T>
   const T& get() const {

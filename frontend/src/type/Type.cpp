@@ -16,6 +16,15 @@ Type& Type::operator=(Primitive type) {
   return *this;
 }
 
+bool Type::operator==(const Type& other) const {
+  if (isPrimitive() != other.isPrimitive())
+    return false;
+  if (isPrimitive()) {
+    return getPrimitive().value() == other.getPrimitive().value();
+  }
+  return std::get<std::string>(variantType) == std::get<std::string>(other.variantType);
+}
+
 uint64_t Type::getBitWidth() const {
   return bitwidth;
 }

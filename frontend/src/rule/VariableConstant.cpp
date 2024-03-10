@@ -5,18 +5,17 @@
 
 using namespace ssa;
 
-VariableConstant::VariableConstant(const Type& type,
-                                   const std::string& name,
+VariableConstant::VariableConstant(const std::string& name,
                                    const Value& value) {
   this->uniqueDefinition =
-      new VariableDeclaration(name,value);
+      new VariableDeclaration(name,Primitive::I8); // TODO
   this->variable = new Variable(uniqueDefinition, value);
 }
 
 VariableConstant::VariableConstant(const ssa::Type& type,
                                    const ssa::Value& value) {
   this->uniqueDefinition =
-      new VariableDeclaration("",value);
+      new VariableDeclaration("",type);
   this->variable = new Variable(uniqueDefinition, value);
 }
 
@@ -30,5 +29,5 @@ const Value& VariableConstant::getValue() const {
 }
 
 const Type& VariableConstant::getType() const {
-  return uniqueDefinition->getValue().getType();
+  return variable->getValue().getType();
 }

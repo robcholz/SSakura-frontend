@@ -11,10 +11,10 @@
 namespace anemos {
 class VariableDeclaration {
  public:
-  explicit VariableDeclaration(std::string name, Value value);
+  explicit VariableDeclaration(std::string name, Type type);
 
  private:
-  Value value;
+  Type type;
   std::string name;
 };
 }  // namespace anemos

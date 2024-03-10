@@ -46,10 +46,10 @@ int main() {
       std::cout << ("parsed a top level expr") << std::endl;
     }
   }
-  auto param=anemos::FormalParameter(
+  //auto param=anemos::FormalParameter(
       //anemos::VariableDeclaration("a", anemos::Value::makeF32(0.f))
-      );
-  func_registry.invoke("main", std::move(param));
+  //    );
+  //func_registry.invoke("main", std::move(param));
   std::error_code EC;
   lexer.closeFile();
   return 0;

@@ -6,19 +6,24 @@
 #ifndef SSAKURA_FRONTEND_ACTUALPARAMETER_HPP
 #define SSAKURA_FRONTEND_ACTUALPARAMETER_HPP
 
-#include ""
+#include "FormalParameter.hpp"
+#include "ssa/value/Value.hpp"
 
 namespace ssa{
 class ActualParameter {
  public:
-  explicit ActualParameter(const std::string& name, const Value& value);
-  explicit ActualParameter(const Value& value);
+  // TODO
+  explicit ActualParameter(const std::string& name, Value value);
+  explicit ActualParameter(Value value);
+
+  FormalParameter toFormalParameter() const;
 
   const Value& getValue() const;
   const std::string& getName() const;
 
  private:
-
+  Value value;
+  std::string name;
 };
 }  // namespace ssa
 

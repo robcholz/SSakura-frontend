@@ -5,13 +5,19 @@
 
 using namespace ssa;
 
-VariableDeclaration::VariableDeclaration(std::string name,Value value)
-    : variableName(std::move(name)),variableValue(std::move(value)) {}
+VariableDeclaration::VariableDeclaration(std::string name, Type type)
+    : variableName(std::move(name)), variableType(std::move(type)) {}
+
+bool VariableDeclaration::operator==(
+    const ssa::VariableDeclaration& other) const {
+  return variableName == other.variableName &&
+         variableType == other.variableType;
+}
 
 std::string VariableDeclaration::getName() const {
   return variableName;
 }
 
-const Value& VariableDeclaration::getValue() const {
-  return variableValue;
+const Type& VariableDeclaration::getType() const {
+  return variableType;
 }

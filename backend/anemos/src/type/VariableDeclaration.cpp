@@ -5,5 +5,5 @@
 
 using namespace anemos;
 
-VariableDeclaration::VariableDeclaration(std::string name, Value value)
-    : name(std::move(name)), value(std::move(value)) {}
+VariableDeclaration::VariableDeclaration(std::string name, Type type)
+    : name(std::move(name)), type(std::move(type)) {}
