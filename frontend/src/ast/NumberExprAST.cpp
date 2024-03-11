@@ -32,6 +32,11 @@ Value NumberExprAST::codeGen() {
   return ASTAdapter::numberExprGen(constant);
 }
 
-ExprAST::Type NumberExprAST::getType() const {
-  return ExprAST::Type::NUMBER_EXPR;
+ExprAST::ExprType NumberExprAST::getType() const {
+  return ExprAST::ExprType::NUMBER_EXPR;
+}
+
+std::expected<ssa::Type, ExprAST::ExprType> NumberExprAST::hasReturnType()
+    const {
+  return constant->getType();
 }

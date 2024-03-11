@@ -79,7 +79,7 @@ bool_type_explicit:bool <- 0=1  # evaluates to FALSE since 0 does not equal to 1
 | 32-bit | f32_t    |
 | 64-bit | f64_t    |
 
-### Type Casting
+### ExprType Casting
 
 Primitive Types in SSakura can be upcasted implicitly:
 unsigned integers to signed integers.
@@ -89,16 +89,16 @@ integers with smaller bits to integers with bigger bits.
 number `char` to integer (`u8` by default).
 number `string` to integer (`int` by default, `string` number overflow or downflow will be silenced).
 
-### Type Aliases
+### ExprType Aliases
 
 Example:
 
 - `use my_custom_type <- int`
 - `use haha_ssakura <- f64_t`
 
-Type aliases create a new name for a variantType.
+ExprType aliases create a new name for a variantType.
 
-Type aliases can name primitives, collections, and any other types.
+ExprType aliases can name primitives, collections, and any other types.
 
 #### Scope
 

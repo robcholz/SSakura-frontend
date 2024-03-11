@@ -11,7 +11,6 @@
 
 #include "Capability.hpp"
 #include "anemos/registry/FunctionRegistry.hpp"
-#include "anemos/type/Parameter.hpp"
 
 int main() {
   auto& func_registry = anemos::FunctionRegistry::getInstance();
@@ -36,7 +35,6 @@ int main() {
                token.getKeyword() == ssa::Keyword::PROCEDURE) {
       auto function = parser->parseFunctionExpr();
       auto final_ast = ast_visitor(function.get());
-
       /// add func ast to registry
       func_registry.add(std::unique_ptr<anemos::FunctionExpressionAST>(
           dynamic_cast<anemos::FunctionExpressionAST*>(final_ast.release())));

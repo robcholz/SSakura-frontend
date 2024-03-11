@@ -22,8 +22,9 @@ class FunctionAST : public ExprAST {
   const PrototypeAST& getPrototype() const;
   const BlockExprAST& getBody() const;
 
-  Value codeGen() final;
-  ExprAST::Type getType() const final;
+  Value codeGen();
+  ExprAST::ExprType getType() const final;
+  std::expected<ssa::Type, ExprType> hasReturnType() const final;
 
  private:
   std::unique_ptr<PrototypeAST> prototype;

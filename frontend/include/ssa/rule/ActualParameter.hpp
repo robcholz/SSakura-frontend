@@ -6,24 +6,26 @@
 #ifndef SSAKURA_FRONTEND_ACTUALPARAMETER_HPP
 #define SSAKURA_FRONTEND_ACTUALPARAMETER_HPP
 
+#include <vector>
+#include <memory>
+#include "ssa/ast/ExprAST.hpp"
 #include "FormalParameter.hpp"
-#include "ssa/value/Value.hpp"
 
 namespace ssa{
 class ActualParameter {
  public:
-  // TODO
-  explicit ActualParameter(const std::string& name, Value value);
-  explicit ActualParameter(Value value);
+  void add(std::unique_ptr<ExprAST> parameter);
 
-  FormalParameter toFormalParameter() const;
+  bool canCastToFormalParameter(const FormalParameter& formalParameter) const;
 
-  const Value& getValue() const;
-  const std::string& getName() const;
+  auto size() const { return parameters.size(); }
+
+  auto begin() const { return parameters.begin(); }
+
+  auto end() const { return parameters.end(); }
 
  private:
-  Value value;
-  std::string name;
+  std::vector<std::unique_ptr<ExprAST>> parameters;
 };
 }  // namespace ssa
 

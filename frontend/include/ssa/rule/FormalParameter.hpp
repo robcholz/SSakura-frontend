@@ -16,9 +16,8 @@ class FormalParameter {
   bool operator==(const FormalParameter& other) const;
 
   void add(std::unique_ptr<VariableDeclaration> type);
-  size_t size() const;
 
-  static FormalParameter emptyParameter();
+  auto size() const { return parameters.size(); }
 
   auto begin() const { return parameters.begin(); }
 

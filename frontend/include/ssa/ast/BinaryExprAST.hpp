@@ -17,7 +17,7 @@ class BinaryExprAST : public ExprAST {
                          std::unique_ptr<ExprAST> leftExprAst,
                          std::unique_ptr<ExprAST> rightExprAst);
   Value codeGen() final;
-  ExprAST::Type getType() const final;
+  ExprAST::ExprType getType() const final;
   const BinaryOperator::BinaryOperatorEnum& getOperatorType() const;
   const ExprAST& getLHS() const;
   const ExprAST& getRHS() const;

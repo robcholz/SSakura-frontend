@@ -16,11 +16,3 @@ bool FormalParameter::operator==(const FormalParameter& other) const {
 void FormalParameter::add(std::unique_ptr<VariableDeclaration> type) {
   parameters.push_back(std::move(type));
 }
-
-size_t FormalParameter::size() const {
-  return parameters.size();
-}
-
-FormalParameter FormalParameter::emptyParameter() {
-  return FormalParameter{};
-}

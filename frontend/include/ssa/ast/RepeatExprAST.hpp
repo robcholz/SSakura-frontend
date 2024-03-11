@@ -18,7 +18,7 @@ class RepeatExprAST : public ExprAST {
                 std::unique_ptr<ExprAST> conditionExpr,
                 std::unique_ptr<ExprAST> bodyExpr);
   Value codeGen() final;
-  ExprAST::Type getType() const final;
+  ExprAST::ExprType getType() const final;
 
  private:
   Type repeatType;

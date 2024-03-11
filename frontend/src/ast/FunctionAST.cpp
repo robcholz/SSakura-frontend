@@ -31,6 +31,10 @@ Value FunctionAST::codeGen() {
   return ASTAdapter::functionExprGen(prototype, body);
 }
 
-ExprAST::Type FunctionAST::getType() const {
-  return ExprAST::Type::FUNCTION_EXPR;
+ExprAST::ExprType FunctionAST::getType() const {
+  return ExprAST::ExprType::FUNCTION_EXPR;
+}
+
+std::expected<ssa::Type, ExprAST::ExprType> FunctionAST::hasReturnType() const {
+  return prototype->getReturnType();
 }

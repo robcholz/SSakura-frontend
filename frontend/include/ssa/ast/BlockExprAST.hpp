@@ -17,7 +17,7 @@ class BlockExprAST : public ExprAST {
 
   Value codeGen() final;
 
-  ExprAST::Type getType() const final;
+  ExprAST::ExprType getType() const final;
 
   auto begin() const { return blockExpr.begin(); }
   auto end() const { return blockExpr.end(); }

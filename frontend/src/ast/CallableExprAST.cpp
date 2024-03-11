@@ -7,25 +7,36 @@
 
 using namespace ssa;
 
-CallableExprAST::CallableExprAST(
-    const std::string& callable,
-    std::unique_ptr<FormalParameter> arguments) {
-  this->callable = callable;
-  this->arguments = std::move(arguments);
+CallableExprAST::CallableExprAST(std::string callable,
+                                 std::unique_ptr<ActualParameter> parameter) {
+  this->callable = std::move(callable);
+  this->parameter = std::move(parameter);
 }
 
 Value CallableExprAST::codeGen() {
-  return ASTAdapter::callableExprGen(callable, *arguments);
+  return {Primitive::I8};
+  //return ASTAdapter::callableExprGen(callable, *arguments);
 }
 
-ExprAST::Type CallableExprAST::getType() const {
-  return ExprAST::Type::CALLABLE_EXPR;
+ExprAST::ExprType CallableExprAST::getType() const {
+  return ExprAST::ExprType::CALLABLE_EXPR;
 }
+
+/*
+std::expected<ssa::Type, ExprAST::ExprType> CallableExprAST::hasReturnType()
+    const {
+  // TODO
+  // 1. set up the callable registry
+  // 2. setup the recursive auto deduce return type
+  //return callable->hasReturnType();
+  return std::unexpected(ExprAST::ExprType::CALLABLE_EXPR);
+}
+*/
 
 const std::string& CallableExprAST::getName() const {
   return callable;
 }
 
-const FormalParameter& CallableExprAST::getArguments() const {
-  return *arguments;
+const ActualParameter& CallableExprAST::getParameter() const {
+  return *parameter;
 }

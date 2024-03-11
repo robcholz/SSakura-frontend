@@ -18,6 +18,6 @@ Value BlockExprAST::codeGen() {
   return ASTAdapter::blockExprGen();
 }
 
-ExprAST::Type BlockExprAST::getType() const {
-  return ExprAST::Type::BLOCK_EXPR;
+ExprAST::ExprType BlockExprAST::getType() const {
+  return ExprAST::ExprType::BLOCK_EXPR;
 }

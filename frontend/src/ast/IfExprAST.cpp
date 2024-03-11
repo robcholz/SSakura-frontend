@@ -35,6 +35,6 @@ Value IfExprAST::codeGen() {
   return ASTAdapter::ifExprGen(condition,thenExpr,elseExpr);
 }
 
-ExprAST::Type IfExprAST::getType() const {
-  return ExprAST::Type::IF_EXPR;
+ExprAST::ExprType IfExprAST::getType() const {
+  return ExprAST::ExprType::IF_EXPR;
 }

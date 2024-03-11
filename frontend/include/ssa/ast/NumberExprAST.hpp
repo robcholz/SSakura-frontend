@@ -24,7 +24,8 @@ class NumberExprAST : public ExprAST {
   const Value& getNumber() const;
 
   Value codeGen() final;
-  ExprAST::Type getType() const final;
+  ExprAST::ExprType getType() const final;
+  std::expected<ssa::Type, ExprType> hasReturnType() const final;
 
  private:
   std::unique_ptr<Value> constant;

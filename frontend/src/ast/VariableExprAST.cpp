@@ -16,6 +16,6 @@ std::string VariableExprAST::getName() const {
   return name;
 }
 
-ExprAST::Type VariableExprAST::getType() const {
-  return ExprAST::Type::VARIABLE_EXPR;
+ExprAST::ExprType VariableExprAST::getType() const {
+  return ExprAST::ExprType::VARIABLE_EXPR;
 }

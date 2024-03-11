@@ -141,7 +141,7 @@ anemos::Type toAnemosType(const ssa::Type& type) {
 
 std::unique_ptr<anemos::ExpressionAST> ast_visitor(const ssa::ExprAST* ast) {
   switch (ast->getType()) {
-    case ssa::ExprAST::Type::BINARY_EXPR: {
+    case ssa::ExprAST::ExprType::BINARY_EXPR: {
       auto binary_ast = dynamic_cast<const ssa::BinaryExprAST*>(ast);
       anemos::BinaryOperatorExpressionAST::BinaryOperatorEnum
           binary_operator_enum;
@@ -185,7 +185,7 @@ std::unique_ptr<anemos::ExpressionAST> ast_visitor(const ssa::ExprAST* ast) {
       return std::make_unique<anemos::BinaryOperatorExpressionAST>(
           binary_operator_enum, std::move(lhs), std::move(rhs));
     }
-    case ssa::ExprAST::Type::BLOCK_EXPR: {
+    case ssa::ExprAST::ExprType::BLOCK_EXPR: {
       auto block_ast = dynamic_cast<const ssa::BlockExprAST*>(ast);
       std::vector<std::unique_ptr<anemos::ExpressionAST>> expressions;
       std::for_each(block_ast->begin(), block_ast->end(),
@@ -195,12 +195,12 @@ std::unique_ptr<anemos::ExpressionAST> ast_visitor(const ssa::ExprAST* ast) {
       return std::make_unique<anemos::BlockExpressionAST>(
           std::move(expressions));
     }
-    case ssa::ExprAST::Type::CALLABLE_EXPR: {
+    case ssa::ExprAST::ExprType::CALLABLE_EXPR: {
       auto callable_ast = dynamic_cast<const ssa::CallableExprAST*>(ast);
 
       break;
     }
-    case ssa::ExprAST::Type::FUNCTION_EXPR: {
+    case ssa::ExprAST::ExprType::FUNCTION_EXPR: {
       auto function_ast = dynamic_cast<const ssa::FunctionAST*>(ast);
       auto& prototype = function_ast->getPrototype();
       auto anemos_function = std::make_unique<anemos::FunctionExpressionAST>();
@@ -220,7 +220,7 @@ std::unique_ptr<anemos::ExpressionAST> ast_visitor(const ssa::ExprAST* ast) {
       anemos_function->addBody(std::move(body));
       return std::move(anemos_function);
     }
-    case ssa::ExprAST::Type::IF_EXPR: {
+    case ssa::ExprAST::ExprType::IF_EXPR: {
       auto if_ast = dynamic_cast<const ssa::IfExprAST*>(ast);
       auto condition = ast_visitor(&if_ast->getCondition());
       auto then_branch = ast_visitor(&if_ast->getThenBranch());
@@ -231,19 +231,21 @@ std::unique_ptr<anemos::ExpressionAST> ast_visitor(const ssa::ExprAST* ast) {
       return std::make_unique<anemos::IfExpressionAST>(
           std::move(condition), std::move(then_branch), std::move(else_branch));
     }
-    case ssa::ExprAST::Type::NUMBER_EXPR: {
+    case ssa::ExprAST::ExprType::NUMBER_EXPR: {
       auto number_ast = dynamic_cast<const ssa::NumberExprAST*>(ast);
       return std::make_unique<anemos::NumberExpressionAST>(
           toAnemosValue(number_ast->getNumber()));
     }
-    case ssa::ExprAST::Type::REPEAT_EXPR: {
+    case ssa::ExprAST::ExprType::REPEAT_EXPR: {
       break;
     }
-    case ssa::ExprAST::Type::VARIABLE_EXPR: {
+    case ssa::ExprAST::ExprType::VARIABLE_EXPR: {
       auto variable_ast = dynamic_cast<const ssa::VariableExprAST*>(ast);
       return std::make_unique<anemos::ObjectExpressionAST>(
           anemos::ObjectReference(variable_ast->getName()));
     }
+    case ssa::ExprAST::ExprType::VMINTERFACE_EXPR:
+      break;
   }
   // silent the warning
   return {};

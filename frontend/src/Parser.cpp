@@ -96,10 +96,7 @@ std::unique_ptr<ExprAST> Parser::parseCallableExpr() {
   auto identifier = getCurrentToken().getIdentifier();
   getNextToken();  // eat identifier
   Checker::getNextVerifyThisToken(this, Symbol::LPAREN);
-  auto parameter =
-      std::make_unique<FormalParameter>(FormalParameter::emptyParameter());
-  // TODO actual param
-  parameter = parseFormalParameterRule();
+  auto parameter = parseActualParameterRule();
   Checker::getNextVerifyThisToken(this, Symbol::RPAREN);
   return std::make_unique<CallableExprAST>(identifier, std::move(parameter));
 }
@@ -157,35 +154,39 @@ std::unique_ptr<ExprAST> Parser::parseExpr() {
 //   ::= id (param_list_ast)
 std::unique_ptr<PrototypeAST> Parser::parsePrototypeExpr() {
   std::string function_name = getCurrentToken().getIdentifier();
+  getNextToken(); // eat function_name
   Checker::getNextVerifyThisToken(this, Symbol::LPAREN);
   auto formal_parameter = parseFormalParameterRule();
   Checker::getNextVerifyThisToken(this, Symbol::RPAREN);
-  Checker::getNextVerifyThisToken(this, Symbol::COLON);
   auto return_type = parseTypeRule();
-  getNextToken();  // <type>
   return std::make_unique<PrototypeAST>(
       function_name, std::move(formal_parameter), std::move(return_type));
 }
 
-std::unique_ptr<PrototypeAST> Parser::parseExternExpr() {
+std::pair<std::unique_ptr<PrototypeAST>, std::unique_ptr<ExprAST>>
+Parser::parseFunctionLikeExpr() {
+  auto prototype = parsePrototypeExpr();
+  auto expr = parseBraceExpr();
+  return {std::move(prototype), std::move(expr)};
+}
+
+std::unique_ptr<VMInterfaceExprAST> Parser::parseExternExpr() {
   Checker::getNextVerifyThisToken(this, Keyword::EXTERN);
-  return parsePrototypeExpr();
+  auto prototype = parsePrototypeExpr();
+  return std::make_unique<VMInterfaceExprAST>(std::move(prototype));
 }
 
 std::unique_ptr<FunctionAST> Parser::parseFunctionExpr() {
   Checker::getNextVerifyThisToken(this, Keyword::PROCEDURE);
-  auto proto = parsePrototypeExpr();
-  auto expr = parseBraceExpr();
-  auto result =
-      std::make_unique<FunctionAST>(std::move(proto), std::move(expr));
-  return std::move(result);
+  auto function_pair = parseFunctionLikeExpr();
+  return std::make_unique<FunctionAST>(std::move(function_pair.first),
+                                       std::move(function_pair.second));
 }
 
 std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
   if (auto e = parseExpr()) {
     auto proto = std::make_unique<PrototypeAST>(
-        "main",
-        std::make_unique<FormalParameter>(FormalParameter::emptyParameter()),
+        "main", std::make_unique<FormalParameter>(),
         std::make_unique<Type>(Primitive::I32));
     return std::make_unique<FunctionAST>(std::move(proto), std::move(e));
   }
@@ -226,10 +227,9 @@ std::unique_ptr<ExprAST> Parser::parseReturnExpr() {
   return std::move(returned_expr);
 }
 
-// ::=name:type,name:type
+// ::=_typeNameRule_,_typeNameRule_
 std::unique_ptr<FormalParameter> Parser::parseFormalParameterRule() {
-  auto parm_list =
-      std::make_unique<FormalParameter>(FormalParameter::emptyParameter());
+  auto parm_list = std::make_unique<FormalParameter>();
   if (lexer.get().lookAhead().isSymbol() &&
       lexer.get().lookAhead().getSymbol() == Symbol::RPAREN) {
     Checker::getNextVerifyNextToken(this, Symbol::RPAREN);
@@ -238,28 +238,53 @@ std::unique_ptr<FormalParameter> Parser::parseFormalParameterRule() {
   while (!Checker::verifyCurrentToken(this, Symbol::RPAREN, true)) {
     auto type = parseTypeNameRule();
     parm_list->add(std::move(type));
-    Checker::getNextVerifyNextToken(this,
-                                    std::vector{Symbol::RPAREN, Symbol::COMMA});
+    if(Checker::verifyCurrentToken(this,Symbol::COMMA,true)){
+      getNextToken();
+    }
   }
   return std::move(parm_list);
 }
 
-// ::=name:type
+std::unique_ptr<ActualParameter> Parser::parseActualParameterRule() {
+  auto parameter = std::make_unique<ActualParameter>();
+  auto tk = lexer.get().getToken();
+  if (tk.isSymbol() && tk.getSymbol() == Symbol::RPAREN) {
+    return parameter;
+  }
+  while (!Checker::verifyCurrentToken(this, Symbol::RPAREN, true)) {
+    auto expr = parseExpr();
+    parameter->add(std::move(expr));
+    if (Checker::verifyCurrentToken(this, Symbol::COMMA, true)) {
+      getNextToken();
+    } else if (Checker::verifyCurrentToken(this, Symbol::RPAREN, true)) {
+      return std::move(parameter);
+    } else {
+      // TODO SYNTAX ERROR
+    }
+  }
+  return std::move(parameter);
+}
+
+// typeNameRule:=name+_typeRule_
 std::unique_ptr<VariableDeclaration> Parser::parseTypeNameRule() {
-  getNextToken();  // <name>
   auto name = getCurrentToken().getIdentifier();
-  Checker::getNextVerifyNextToken(this, Symbol::COLON);
-  getNextToken();  // <type>
-  std::unique_ptr<Type> type_str = parseTypeRule();
+  getNextToken(); // eat name
+  auto type_str = parseTypeRule();
   return std::make_unique<VariableDeclaration>(name, *type_str);
 }
 
-std::unique_ptr<Type> Parser::parseTypeRule() const {
+// typeRule=:{type}
+std::unique_ptr<Type> Parser::parseTypeRule() {
+  if (!(getCurrentToken().isSymbol() && getCurrentToken().getSymbol() == Symbol::COLON)) {
+    return std::make_unique<Type>(Primitive::VOID);
+  }
+  getNextToken();
   const auto& type_str = getCurrentToken().getIdentifier();
   const auto& maybe_primitive = ssa::from_string<Primitive>(type_str);
   std::unique_ptr<Type> type;
   if (maybe_primitive.has_value())
     type = std::make_unique<Type>(maybe_primitive.value());
   // TODO user-defined type
+  getNextToken();
   return std::move(type);
 }

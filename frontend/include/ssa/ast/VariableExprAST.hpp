@@ -16,7 +16,7 @@ class VariableExprAST : public ExprAST {
   Value codeGen() final;
 
   std::string getName() const;
-  ExprAST::Type getType() const final;
+  ExprAST::ExprType getType() const final;
 
  private:
   std::string name;

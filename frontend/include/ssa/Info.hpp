@@ -9,11 +9,6 @@
 #include <map>
 #include <memory>
 
-namespace llvm {
-    class Value;
-    class LLVMContext;
-}
-
 class Info {
 public:
     Info(const Info& other) = delete;

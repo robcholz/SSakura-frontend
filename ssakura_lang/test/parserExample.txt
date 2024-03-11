@@ -6,6 +6,8 @@ PROCEDURE foo(x:I8):I32{
     }
 }
 
+EXTERN print(x:I64)
+
 PROCEDURE main():I32{
-    RETURN 0
+    print(1)
 }

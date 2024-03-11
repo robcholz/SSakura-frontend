@@ -22,7 +22,7 @@ class IfExprAST : public ExprAST {
   std::optional<std::reference_wrapper<const ExprAST>> getElseBranch() const;
 
   Value codeGen() final;
-  ExprAST::Type getType() const final;
+  ExprAST::ExprType getType() const final;
 
  private:
   std::unique_ptr<ExprAST> condition;

@@ -19,6 +19,6 @@ Value RepeatExprAST::codeGen() {
   return ASTAdapter::repeatExprGen(repeatType, conditionExpr, bodyExpr);
 }
 
-ExprAST::Type RepeatExprAST::getType() const {
-  return ExprAST::Type::REPEAT_EXPR;
+ExprAST::ExprType RepeatExprAST::getType() const {
+  return ExprAST::ExprType::REPEAT_EXPR;
 }

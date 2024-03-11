@@ -45,8 +45,8 @@ Value BinaryExprAST::codeGen() {
   }
 }
 
-ExprAST::Type BinaryExprAST::getType() const {
-  return ExprAST::Type::BINARY_EXPR;
+ExprAST::ExprType BinaryExprAST::getType() const {
+  return ExprAST::ExprType::BINARY_EXPR;
 }
 
 const BinaryOperator::BinaryOperatorEnum& BinaryExprAST::getOperatorType()
